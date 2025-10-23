@@ -1,0 +1,185 @@
+import { sql } from '../../config/database';
+
+export interface Appointment {
+  id: string;
+  date: Date;
+  time: string;
+  duration: number;
+  status: 'CONFIRMED' | 'COMPLETED';
+  notes?: string;
+  reason?: string;
+  createdAt: Date;
+  updatedAt: Date;
+  userId: string;
+  doctorId: string;
+  // 관계 데이터
+  user?: {
+    id: string;
+    firstName?: string;
+    lastName?: string;
+    email: string;
+  };
+  doctor?: {
+    id: string;
+    name: string;
+    speciality: string;
+  };
+}
+
+export interface CreateAppointmentData {
+  date: Date;
+  time: string;
+  duration?: number;
+  notes?: string;
+  reason?: string;
+  userId: string;
+  doctorId: string;
+}
+
+export interface UpdateAppointmentData {
+  date?: Date;
+  time?: string;
+  duration?: number;
+  status?: 'CONFIRMED' | 'COMPLETED';
+  notes?: string;
+  reason?: string;
+}
+
+/**
+ * 예약 생성
+ */
+export const insertAppointment = async (appointmentData: CreateAppointmentData): Promise<Appointment> => {
+  const { date, time, duration = 30, notes, reason, userId, doctorId } = appointmentData;
+  
+  const [appointment] = await sql`
+    INSERT INTO appointments (date, time, duration, notes, reason, user_id, doctor_id)
+    VALUES (${date}, ${time}, ${duration}, ${notes || null}, ${reason || null}, ${userId}, ${doctorId})
+    RETURNING id, date, time, duration, status, notes, reason, 
+              created_at as "createdAt", updated_at as "updatedAt", user_id as "userId", doctor_id as "doctorId"
+  ` as [Appointment];
+  
+  return appointment;
+};
+
+/**
+ * 사용자의 예약 목록 조회
+ */
+export const selectUserAppointments = async (userId: string): Promise<Appointment[]> => {
+  const appointments = await sql`
+    SELECT a.id, a.date, a.time, a.duration, a.status, a.notes, a.reason, 
+           a.created_at as "createdAt", a.updated_at as "updatedAt", 
+           a.user_id as "userId", a.doctor_id as "doctorId",
+           u.first_name as "user.firstName", u.last_name as "user.lastName", u.email as "user.email",
+           d.name as "doctor.name", d.speciality as "doctor.speciality"
+    FROM appointments a
+    LEFT JOIN users u ON a.user_id = u.id
+    LEFT JOIN doctors d ON a.doctor_id = d.id
+    WHERE a.user_id = ${userId}
+    ORDER BY a.date DESC, a.time DESC
+  ` as [Appointment];
+  
+  return appointments;
+};
+
+/**
+ * 의사의 예약 목록 조회
+ */
+export const selectDoctorAppointments = async (doctorId: string): Promise<Appointment[]> => {
+  const appointments = await sql`
+    SELECT a.id, a.date, a.time, a.duration, a.status, a.notes, a.reason, 
+           a.created_at as "createdAt", a.updated_at as "updatedAt", 
+           a.user_id as "userId", a.doctor_id as "doctorId",
+           u.first_name as "user.firstName", u.last_name as "user.lastName", u.email as "user.email",
+           d.name as "doctor.name", d.speciality as "doctor.speciality"
+    FROM appointments a
+    LEFT JOIN users u ON a.user_id = u.id
+    LEFT JOIN doctors d ON a.doctor_id = d.id
+    WHERE a.doctor_id = ${doctorId}
+    ORDER BY a.date DESC, a.time DESC
+  ` as [Appointment];
+  
+  return appointments;
+};
+
+/**
+ * 특정 날짜의 예약 조회
+ */
+export const selectAppointmentsByDate = async (date: Date, doctorId?: string): Promise<Appointment[]> => {
+  let query = sql`
+    SELECT a.id, a.date, a.time, a.duration, a.status, a.notes, a.reason, 
+           a.created_at as "createdAt", a.updated_at as "updatedAt", 
+           a.user_id as "userId", a.doctor_id as "doctorId",
+           u.first_name as "user.firstName", u.last_name as "user.lastName", u.email as "user.email",
+           d.name as "doctor.name", d.speciality as "doctor.speciality"
+    FROM appointments a
+    LEFT JOIN users u ON a.user_id = u.id
+    LEFT JOIN doctors d ON a.doctor_id = d.id
+    WHERE DATE(a.date) = ${date.toISOString().split('T')[0]}
+  `;
+  
+  if (doctorId) {
+    query = sql`
+      ${query} AND a.doctor_id = ${doctorId}
+    `;
+  }
+  
+  query = sql`
+    ${query}
+    ORDER BY a.time ASC
+  `;
+  
+  return await query as [Appointment];
+};
+
+/**
+ * ID로 예약 조회
+ */
+export const selectAppointmentById = async (id: string): Promise<Appointment | null> => {
+  const [appointment] = await sql`
+    SELECT a.id, a.date, a.time, a.duration, a.status, a.notes, a.reason, 
+           a.created_at as "createdAt", a.updated_at as "updatedAt", 
+           a.user_id as "userId", a.doctor_id as "doctorId",
+           u.first_name as "user.firstName", u.last_name as "user.lastName", u.email as "user.email",
+           d.name as "doctor.name", d.speciality as "doctor.speciality"
+    FROM appointments a
+    LEFT JOIN users u ON a.user_id = u.id
+    LEFT JOIN doctors d ON a.doctor_id = d.id
+    WHERE a.id = ${id}
+  ` as [Appointment];
+  
+  return appointment || null;
+};
+
+/**
+ * 예약 정보 업데이트
+ */
+export const updateAppointment = async (id: string, appointmentData: UpdateAppointmentData): Promise<Appointment | null> => {
+  const { date, time, duration, status, notes, reason } = appointmentData;
+  
+  const [appointment] = await sql`
+    UPDATE appointments 
+    SET date = COALESCE(${date || null}, date),
+        time = COALESCE(${time || null}, time),
+        duration = COALESCE(${duration || null}, duration),
+        status = COALESCE(${status || null}, status),
+        notes = COALESCE(${notes || null}, notes),
+        reason = COALESCE(${reason || null}, reason),
+        updated_at = NOW()
+    WHERE id = ${id}
+    RETURNING id, date, time, duration, status, notes, reason, 
+              created_at as "createdAt", updated_at as "updatedAt", user_id as "userId", doctor_id as "doctorId"
+  ` as [Appointment];
+  
+  return appointment || null;
+};
+
+/**
+ * 예약 삭제
+ */
+export const deleteAppointment = async (id: string): Promise<boolean> => {
+  const result = await sql`
+    DELETE FROM appointments WHERE id = ${id}
+  ` as [Appointment];
+  
+  return result.length > 0;
+};

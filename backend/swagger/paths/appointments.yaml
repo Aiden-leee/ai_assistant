@@ -1,0 +1,146 @@
+openapi: 3.0.3
+info:
+  title: Appointments Paths
+  version: 1.0.0
+paths:
+  /appointments:
+    post:
+      tags: [Appointments]
+      summary: 예약 생성
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                date:
+                  type: string
+                  format: date-time
+                time:
+                  type: string
+                duration:
+                  type: integer
+                notes:
+                  type: string
+                reason:
+                  type: string
+                userId:
+                  type: string
+                doctorId:
+                  type: string
+              required: [date, time, userId, doctorId]
+      responses:
+        '201':
+          description: 생성됨
+  /appointments/user/{userId}:
+    get:
+      tags: [Appointments]
+      summary: 사용자의 예약 목록 조회
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 성공
+  /appointments/doctor/{doctorId}:
+    get:
+      tags: [Appointments]
+      summary: 의사의 예약 목록 조회
+      parameters:
+        - in: path
+          name: doctorId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 성공
+  /appointments/date/{date}:
+    get:
+      tags: [Appointments]
+      summary: 특정 날짜의 예약 조회
+      parameters:
+        - in: path
+          name: date
+          required: true
+          schema:
+            type: string
+            format: date
+        - in: query
+          name: doctorId
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 성공
+  /appointments/{id}:
+    get:
+      tags: [Appointments]
+      summary: 예약 상세 조회
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 성공
+        '404':
+          description: 찾을 수 없음
+    put:
+      tags: [Appointments]
+      summary: 예약 정보 업데이트
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                date:
+                  type: string
+                  format: date-time
+                time:
+                  type: string
+                duration:
+                  type: integer
+                status:
+                  type: string
+                  enum: [CONFIRMED, COMPLETED]
+                notes:
+                  type: string
+                reason:
+                  type: string
+      responses:
+        '200':
+          description: 업데이트됨
+        '404':
+          description: 찾을 수 없음
+    delete:
+      tags: [Appointments]
+      summary: 예약 삭제
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 삭제됨
+        '404':
+          description: 찾을 수 없음
+
+
