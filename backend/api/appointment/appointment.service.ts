@@ -1,5 +1,6 @@
 import {
   insertAppointment as insertAppointmentModel,
+  selectAllAppointments as selectAllAppointmentsModel,
   selectUserAppointments as selectUserAppointmentsModel,
   selectDoctorAppointments as selectDoctorAppointmentsModel,
   selectAppointmentsByDate as selectAppointmentsByDateModel,
@@ -61,6 +62,13 @@ export const readAppointmentById = async (id: string) => {
 };
 
 /**
+ * 전체 예약 목록 조회
+ */
+export const readAllAppointments = async () => {
+  return await selectAllAppointmentsModel();
+};
+
+/**
  * 예약 정보 업데이트
  */
 export const modifyAppointment = async (id: string, appointmentData: UpdateAppointmentData) => {
@@ -100,6 +108,7 @@ export const deleteAppointment = async (id: string) => {
 
 export const appointmentService = {
   createAppointment,
+  readAllAppointments,
   readUserAppointments,
   readDoctorAppointments,
   readAppointmentsByDate,

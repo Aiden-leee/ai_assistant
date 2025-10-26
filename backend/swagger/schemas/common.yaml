@@ -9,5 +9,34 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
+  schemas:
+    SuccessResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: 성공 여부
+          example: true
+        message:
+          type: string
+          description: 메시지
+          example: '성공'
+        data:
+          type: object
+          description: 데이터
+          example: {  }
+      required: [success, message, data]
+    ErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: 성공 여부
+          example: false
+        message:
+          type: string
+          description: 메시지
+          example: '오류'
+      required: [success, message]
 
 

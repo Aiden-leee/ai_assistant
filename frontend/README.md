@@ -10,5 +10,7 @@ npm install @clerk/nextjs
 
 ### neon postgresql
 
-
 ### Vapi 
+
+### avatar placeholder
+https://avatar.iran.liara.run/public/boy?username=[value]

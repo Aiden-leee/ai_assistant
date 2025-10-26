@@ -2,6 +2,26 @@ import { Request, Response } from 'express';
 import * as appointmentService from './appointment.service';
 
 /**
+ * 전체 예약 목록 조회
+ */
+export const getAllAppointments = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const appointments = await appointmentService.readAllAppointments();
+    console.log("appointments", appointments);
+    res.status(200).json({
+      success: true,
+      message: '예약 목록 조회 성공',
+      data: appointments
+    });
+  } catch (error: any) {
+    res.status(500).json({
+      success: false,
+      message: error.message || '예약 목록 조회 중 오류가 발생했습니다.'
+    });
+  }
+};
+
+/**
  * 예약 생성
  */
 export const createAppointment = async (req: Request, res: Response): Promise<void> => {
@@ -42,6 +62,7 @@ export const getUserAppointments = async (req: Request, res: Response): Promise<
     
     res.status(200).json({
       success: true,
+      message: '사용자의 예약 목록 조회 성공',
       data: appointments
     });
   } catch (error: any) {
@@ -63,6 +84,7 @@ export const getDoctorAppointments = async (req: Request, res: Response): Promis
     
     res.status(200).json({
       success: true,
+      message: '의사의 예약 목록 조회 성공',
       data: appointments
     });
   } catch (error: any) {
@@ -88,6 +110,7 @@ export const getAppointmentsByDate = async (req: Request, res: Response): Promis
     
     res.status(200).json({
       success: true,
+      message: '특정 날짜의 예약 조회 성공',
       data: appointments
     });
   } catch (error: any) {
@@ -117,6 +140,7 @@ export const getAppointmentById = async (req: Request, res: Response): Promise<v
     
     res.status(200).json({
       success: true,
+      message: '예약 상세 조회 성공',
       data: appointment
     });
   } catch (error: any) {
@@ -184,7 +208,8 @@ export const deleteAppointment = async (req: Request, res: Response): Promise<vo
     
     res.status(200).json({
       success: true,
-      message: '예약이 성공적으로 삭제되었습니다.'
+      message: '예약이 성공적으로 삭제되었습니다.',
+      data: success
     });
   } catch (error: any) {
     res.status(500).json({

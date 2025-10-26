@@ -23,6 +23,7 @@ export interface Appointment {
     id: string;
     name: string;
     speciality: string;
+    imageUrl?: string;
   };
 }
 
@@ -59,6 +60,25 @@ export const insertAppointment = async (appointmentData: CreateAppointmentData):
   ` as [Appointment];
   
   return appointment;
+};
+
+/**
+ * 전체 예약 목록 조회 (사용자, 의사 정보 포함)
+ */
+export const selectAllAppointments = async (): Promise<Appointment[]> => {
+  const appointments = await sql`
+    SELECT a.id, a.date, a.time, a.duration, a.status, a.notes, a.reason,
+           a.created_at as "createdAt", a.updated_at as "updatedAt",
+           a.user_id as "userId", a.doctor_id as "doctorId",
+           u.first_name as "user.firstName", u.last_name as "user.lastName", u.email as "user.email",
+           d.name as "doctor.name", d.speciality as "doctor.speciality", d.image_url as "doctor.imageUrl"
+    FROM appointments a
+      LEFT JOIN users u ON a.user_id = u.id
+      LEFT JOIN doctors d ON a.doctor_id = d.id
+    ORDER BY a.created_at DESC
+  ` as [Appointment];
+
+  return appointments;
 };
 
 /**

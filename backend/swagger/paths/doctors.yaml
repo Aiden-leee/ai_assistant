@@ -1,30 +1,12 @@
 openapi: 3.0.3
 info:
-  title: Appointments Paths
+  title: Doctors Paths
   version: 1.0.0
 paths:
-  /appointments:
-    get:
-      tags: [Appointments]
-      summary: 전체 예약 목록 조회 (사용자, 의사 정보 포함)
-      responses:
-        200:
-          description: 성공
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/SuccessResponse'
-        400:
-          description: 예약 목록 조회 실패
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      security:
-        - BearerAuth: []
+  /doctors:
     post:
-      tags: [Appointments]
-      summary: 예약 생성
+      tags: [Doctors]
+      summary: 의사 생성
       requestBody:
         required: true
         content:
@@ -32,65 +14,204 @@ paths:
             schema:
               type: object
               properties:
-                date:
+                name:
                   type: string
-                  format: date-time
-                time:
+                  description: 의사 이름
+                email:
                   type: string
-                duration:
-                  type: integer
-                notes:
+                  format: email
+                  description: 의사 이메일
+                phone:
                   type: string
-                reason:
+                  description: 의사 전화번호
+                speciality:
                   type: string
-                userId:
+                  description: 의사 전문과목
+                bio:
                   type: string
-                doctorId:
+                  description: 의사 소개
+                imageUrl:
                   type: string
-              required: [date, time, userId, doctorId]
+                  description: 의사 이미지 URL
+                gender:
+                  type: string
+                  enum: [MALE, FEMALE]
+                  description: 의사 성별
+              required:
+                - name
+                - email
+                - phone
+                - speciality
+                - imageUrl
+                - gender
       responses:
         201:
-          description: 생성됨
+          description: 의사 생성 성공
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/SuccessResponse'
         400:
-          description: 예약 생성 실패
+          description: 의사 생성 실패
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
       security:
         - BearerAuth: []
-  /appointments/user/{userId}:
+  /doctors/active:
     get:
-      tags: [Appointments]
-      summary: 사용자의 예약 목록 조회
+      tags: [Doctors]
+      summary: 모든 활성 의사 조회
+      responses:
+        200:
+          description: 모든 활성 의사 조회 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        400:
+          description: 모든 활성 의사 조회 실패
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+        - BearerAuth: []
+  /doctors/{id}:
+    get:
+      tags: [Doctors]
+      summary: ID로 의사 조회
       parameters:
         - in: path
-          name: userId
+          name: id
           required: true
           schema:
             type: string
       responses:
         200:
-          description: 성공
+          description: ID로 의사 조회 성공
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/SuccessResponse'
         400:
-          description: 예약 목록 조회 실패
+          description: ID로 의사 조회 실패
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
       security:
         - BearerAuth: []
-  /appointments/doctor/{doctorId}:
+    put:
+      tags: [Doctors]
+      summary: 의사 정보 업데이트
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: 의사 이름
+                email:
+                  type: string
+                  format: email
+                  description: 의사 이메일
+                phone:
+                  type: string
+                  description: 의사 전화번호
+                speciality:
+                  type: string
+                  description: 의사 전문과목
+                bio:
+                  type: string
+                  description: 의사 소개
+                imageUrl:
+                  type: string
+                  description: 의사 이미지 URL
+                gender:
+                  type: string
+                  enum: [MALE, FEMALE]
+                  description: 의사 성별
+                isActive:
+                  type: boolean
+                  description: 의사 활성 여부
+      responses:
+        200:
+          description: 의사 정보 업데이트 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        400:
+          description: 의사 정보 업데이트 실패
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+        - BearerAuth: []
+    delete:
+      tags: [Doctors]
+      summary: 의사 삭제
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: 의사 삭제 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        400:
+          description: 의사 삭제 실패
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+        - BearerAuth: []
+  /doctors/speciality/{speciality}:
     get:
-      tags: [Appointments]
+      tags: [Doctors]
+      summary: 전문과목으로 의사 조회
+      parameters:
+        - in: path
+          name: speciality
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: 전문과목으로 의사 조회 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        400:
+          description: 전문과목으로 의사 조회 실패
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+        - BearerAuth: []    
+  /doctors/{doctorId}:
+    get:
+      tags: [Doctors]
       summary: 의사의 예약 목록 조회
       parameters:
         - in: path
@@ -100,143 +221,16 @@ paths:
             type: string
       responses:
         200:
-          description: 성공
+          description: 의사의 예약 목록 조회 성공
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/SuccessResponse'
         400:
-          description: 예약 목록 조회 실패
+          description: 의사의 예약 목록 조회 실패
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
       security:
         - BearerAuth: []
-  /appointments/date/{date}:
-    get:
-      tags: [Appointments]
-      summary: 특정 날짜의 예약 조회
-      parameters:
-        - in: path
-          name: date
-          required: true
-          schema:
-            type: string
-            format: date
-        - in: query
-          name: doctorId
-          required: false
-          schema:
-            type: string
-      responses:
-        200:
-          description: 성공
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/SuccessResponse'
-        400:
-          description: 예약 목록 조회 실패
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      security:
-        - BearerAuth: []
-  /appointments/{id}:
-    get:
-      tags: [Appointments]
-      summary: 예약 상세 조회
-      parameters:
-        - in: path
-          name: id
-          required: true
-          schema:
-            type: string
-      responses:
-        200:
-          description: 성공
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/SuccessResponse'
-        400:
-          description: 예약 상세 조회 실패
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      security:
-        - BearerAuth: []
-    put:
-      tags: [Appointments]
-      summary: 예약 정보 업데이트
-      parameters:
-        - in: path
-          name: id
-          required: true
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                date:
-                  type: string
-                  format: date-time
-                time:
-                  type: string
-                duration:
-                  type: integer
-                status:
-                  type: string
-                  enum: [CONFIRMED, COMPLETED]
-                notes:
-                  type: string
-                reason:
-                  type: string
-      responses:
-        200:
-          description: 업데이트됨
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/SuccessResponse'
-        400:
-          description: 예약 정보 업데이트 실패
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      security:
-        - BearerAuth: []
-    delete:
-      tags: [Appointments]
-      summary: 예약 삭제
-      parameters:
-        - in: path
-          name: id
-          required: true
-          schema:
-            type: string
-      responses:
-        200:
-          description: 삭제됨
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/SuccessResponse'
-        400:
-          description: 예약 삭제 실패
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      security:
-        - BearerAuth: []
-
-

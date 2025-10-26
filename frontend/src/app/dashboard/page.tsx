@@ -1,8 +1,12 @@
+import Navbar from '@/components/commons/Navbar';
 import React from 'react'
 
-function DashboardPage() {
+async function DashboardPage() {
   return (
-    <div>DashboardPage</div>
+    <div>
+      <Navbar />
+      DASHBOARD
+    </div>
   )
 }
 

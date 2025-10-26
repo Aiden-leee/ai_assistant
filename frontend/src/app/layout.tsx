@@ -5,6 +5,8 @@ import {
   ClerkProvider
 } from '@clerk/nextjs'
 import UserSync from "@/components/userSync";
+import TanstackProvider from "@/components/providers/TanstackProvider";
+import { Toaster } from "@/components/ui/sonner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -27,25 +29,28 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider
-      appearance={{
-        variables: {
-          colorPrimary: "#1e9df1",
-          colorBackground: "#f3f4f6",
-          colorText: "#111827",
-          colorTextSecondary: "#6b7280",
-          colorInputBackground: "#f3f4f6"
-        }
-      }}
-    >
-      <html lang="en">
-        <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-        >
-          <UserSync />
-          {children}
-        </body>
-      </html>
-    </ClerkProvider>
+    <TanstackProvider>
+      <ClerkProvider
+        appearance={{
+          variables: {
+            colorPrimary: "#1e9df1",
+            colorBackground: "#f3f4f6",
+            colorText: "#111827",
+            colorTextSecondary: "#6b7280",
+            colorInputBackground: "#f3f4f6"
+          }
+        }}
+      >
+        <html lang="en">
+          <body
+            className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+          >
+            <UserSync />
+            {children}
+            <Toaster richColors closeButton position="top-center" />
+          </body>
+        </html>
+      </ClerkProvider>
+    </TanstackProvider>
   );
 }
