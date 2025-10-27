@@ -171,9 +171,7 @@
   body {
     @apply bg-background text-foreground;
   }
-  html, body {
-    overflow-y: scroll;
-  }
+
 }
 
 /* 버튼 포인터 커서 추가 */

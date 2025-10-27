@@ -1,3 +1,4 @@
+import { selectUserAppointmentStats } from "../appointment/appointment.model";
 import { CreateDoctorData, deleteDeactivateDoctor, insertDoctor, selectAllDoctors, selectDoctorById, selectDoctorsBySpeciality, updateDoctor, UpdateDoctorData } from "./doctor.model";
 
 // 의사 생성 서비스
@@ -8,6 +9,11 @@ export const createDoctorService = async (doctorData: CreateDoctorData) => {
 // 모든 활성 의사 조회 서비스
 export const readAllDoctorsService = async () => {
     return await selectAllDoctors();
+}
+
+// 사용자의 예약 통계 조회 서비스
+export const readUserAppointmentStatsService = async (userId: string) => {
+    return await selectUserAppointmentStats(userId);
 }
 
 // ID로 의사 조회 서비스

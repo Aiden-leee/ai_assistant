@@ -90,15 +90,30 @@ export const selectUserAppointments = async (userId: string): Promise<Appointmen
            a.created_at as "createdAt", a.updated_at as "updatedAt", 
            a.user_id as "userId", a.doctor_id as "doctorId",
            u.first_name as "user.firstName", u.last_name as "user.lastName", u.email as "user.email",
-           d.name as "doctor.name", d.speciality as "doctor.speciality"
+           d.name as "doctor.name", d.speciality as "doctor.speciality", d.image_url as "doctor.imageUrl"
     FROM appointments a
     LEFT JOIN users u ON a.user_id = u.id
     LEFT JOIN doctors d ON a.doctor_id = d.id
     WHERE a.user_id = ${userId}
-    ORDER BY a.date DESC, a.time DESC
+    ORDER BY a.date ASC, a.time ASC
   ` as [Appointment];
   
   return appointments;
+};
+
+/*
+* 사용자의 예약 통계 조회
+*/
+export const selectUserAppointmentStats = async (userId: string) => {
+  const result = await sql`
+    SELECT 
+      COUNT(*)::int AS "totalAppointments",
+      COUNT(*) FILTER (WHERE status = 'COMPLETED')::int AS "completedAppointments"
+    FROM appointments
+    WHERE user_id = ${userId}
+  `;
+
+  return result[0] ?? { totalAppointments: 0, completedAppointments: 0 };
 };
 
 /**

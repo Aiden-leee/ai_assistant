@@ -8,7 +8,8 @@ import {
   updateAppointment as updateAppointmentModel,
   deleteAppointment as removeAppointmentModel,
   CreateAppointmentData,
-  UpdateAppointmentData
+  UpdateAppointmentData,
+  selectUserAppointmentStats
 } from './appointment.model';
 
 /**
@@ -38,6 +39,13 @@ export const createAppointment = async (appointmentData: CreateAppointmentData) 
  */
 export const readUserAppointments = async (userId: string) => {
   return await selectUserAppointmentsModel(userId);
+};
+
+/**
+ * 사용자의 예약 통계 조회
+ */
+export const readUserAppointmentStats = async (userId: string) => {
+  return await selectUserAppointmentStats(userId);
 };
 
 /**

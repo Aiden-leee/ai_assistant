@@ -27,7 +27,7 @@ export const getAllAppointments = async (req: Request, res: Response): Promise<v
 export const createAppointment = async (req: Request, res: Response): Promise<void> => {
   try {
     const { date, time, duration, notes, reason, userId, doctorId } = req.body;
-    
+
     const result = await appointmentService.createAppointment({
       date: new Date(date),
       time,
@@ -37,7 +37,7 @@ export const createAppointment = async (req: Request, res: Response): Promise<vo
       userId,
       doctorId
     });
-    
+
     res.status(201).json({
       success: true,
       message: '예약이 성공적으로 생성되었습니다.',
@@ -57,9 +57,9 @@ export const createAppointment = async (req: Request, res: Response): Promise<vo
 export const getUserAppointments = async (req: Request, res: Response): Promise<void> => {
   try {
     const { userId } = req.params;
-    
+
     const appointments = await appointmentService.readUserAppointments(userId);
-    
+
     res.status(200).json({
       success: true,
       message: '사용자의 예약 목록 조회 성공',
@@ -74,14 +74,34 @@ export const getUserAppointments = async (req: Request, res: Response): Promise<
 };
 
 /**
+ * 사용자의 예약 통계 조회
+ */
+export const getUserAppointmentStats = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { userId } = req.params;
+    const stats = await appointmentService.readUserAppointmentStats(userId);
+    res.status(200).json({
+      success: true,
+      message: '사용자의 예약 통계 조회 성공',
+      data: stats
+    });
+  } catch (error: any) {
+    res.status(500).json({
+      success: false,
+      message: error.message || '예약 통계 조회 중 오류가 발생했습니다.'
+    });
+  }
+}
+
+/**
  * 의사의 예약 목록 조회
  */
 export const getDoctorAppointments = async (req: Request, res: Response): Promise<void> => {
   try {
     const { doctorId } = req.params;
-    
+
     const appointments = await appointmentService.readDoctorAppointments(doctorId);
-    
+
     res.status(200).json({
       success: true,
       message: '의사의 예약 목록 조회 성공',
@@ -102,12 +122,12 @@ export const getAppointmentsByDate = async (req: Request, res: Response): Promis
   try {
     const { date } = req.params;
     const { doctorId } = req.query;
-    
+
     const appointments = await appointmentService.readAppointmentsByDate(
-      new Date(date), 
+      new Date(date),
       doctorId as string
     );
-    
+
     res.status(200).json({
       success: true,
       message: '특정 날짜의 예약 조회 성공',
@@ -127,9 +147,9 @@ export const getAppointmentsByDate = async (req: Request, res: Response): Promis
 export const getAppointmentById = async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
-    
+
     const appointment = await appointmentService.readAppointmentById(id);
-    
+
     if (!appointment) {
       res.status(404).json({
         success: false,
@@ -137,7 +157,7 @@ export const getAppointmentById = async (req: Request, res: Response): Promise<v
       });
       return;
     }
-    
+
     res.status(200).json({
       success: true,
       message: '예약 상세 조회 성공',
@@ -158,7 +178,7 @@ export const updateAppointment = async (req: Request, res: Response): Promise<vo
   try {
     const { id } = req.params;
     const { date, time, duration, status, notes, reason } = req.body;
-    
+
     const result = await appointmentService.modifyAppointment(id, {
       date: date ? new Date(date) : undefined,
       time,
@@ -167,7 +187,7 @@ export const updateAppointment = async (req: Request, res: Response): Promise<vo
       notes,
       reason
     });
-    
+
     if (!result) {
       res.status(404).json({
         success: false,
@@ -175,7 +195,7 @@ export const updateAppointment = async (req: Request, res: Response): Promise<vo
       });
       return;
     }
-    
+
     res.status(200).json({
       success: true,
       message: '예약이 성공적으로 업데이트되었습니다.',
@@ -195,9 +215,9 @@ export const updateAppointment = async (req: Request, res: Response): Promise<vo
 export const deleteAppointment = async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
-    
+
     const success = await appointmentService.deleteAppointment(id);
-    
+
     if (!success) {
       res.status(404).json({
         success: false,
@@ -205,7 +225,7 @@ export const deleteAppointment = async (req: Request, res: Response): Promise<vo
       });
       return;
     }
-    
+
     res.status(200).json({
       success: true,
       message: '예약이 성공적으로 삭제되었습니다.',
