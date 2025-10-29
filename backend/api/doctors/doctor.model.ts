@@ -80,6 +80,24 @@ export const selectAllDoctors = async (): Promise<Doctor[]> => {
 };
 
 /**
+ * 활성화된 의사 조회 (이름 오름차순, 예약 수 포함)
+ */
+export const selectAvailableDoctors = async (): Promise<Doctor[]> => {
+  const doctors = await sql`
+    SELECT d.id, d.name, d.email, d.phone, d.speciality, d.bio, d.image_url as "imageUrl",
+           d.gender, d.is_active as "isActive", d.created_at as "createdAt", d.updated_at as "updatedAt",
+           (SELECT COUNT(*) 
+            FROM appointments a 
+            WHERE a.doctor_id = d.id) AS "appointmentCount"
+    FROM doctors d
+    WHERE d.is_active = true
+    ORDER BY d.name ASC
+  ` as [Doctor];
+
+  return doctors;
+};
+
+/**
  * ID로 의사 조회
  */
 export const selectDoctorById = async (id: string): Promise<Doctor | null> => {

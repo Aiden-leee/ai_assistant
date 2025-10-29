@@ -1,10 +1,11 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import * as appointmentService from './appointment.service';
+import * as authService from '../auth/auth.service';
 
 /**
  * 전체 예약 목록 조회
  */
-export const getAllAppointments = async (req: Request, res: Response): Promise<void> => {
+export const getAllAppointments = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const appointments = await appointmentService.readAllAppointments();
     console.log("appointments", appointments);
@@ -14,27 +15,38 @@ export const getAllAppointments = async (req: Request, res: Response): Promise<v
       data: appointments
     });
   } catch (error: any) {
-    res.status(500).json({
-      success: false,
-      message: error.message || '예약 목록 조회 중 오류가 발생했습니다.'
-    });
+    next(error);
   }
 };
 
 /**
  * 예약 생성
  */
-export const createAppointment = async (req: Request, res: Response): Promise<void> => {
+export const createAppointment = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const { date, time, duration, notes, reason, userId, doctorId } = req.body;
+    
+    if (!doctorId || !date || !time) {
+      throw new Error('doctorId, date, time 은 필수입니다.');
+    }
+
+    console.log("createAppointment", req.body);
+
+    // userId(Clerk ID) 를 내부 사용자 ID로 매핑
+    if (!userId) throw new Error('로그인이 필요합니다.');
+
+    const user = await authService.readUserByClerkId(userId);
+    if (!user) {
+      throw new Error('사용자를 찾을 수 없습니다.');
+    }
 
     const result = await appointmentService.createAppointment({
       date: new Date(date),
       time,
       duration,
       notes,
-      reason,
-      userId,
+      reason: reason || '일반 상담',
+      userId: user.id,
       doctorId
     });
 
@@ -44,17 +56,14 @@ export const createAppointment = async (req: Request, res: Response): Promise<vo
       data: result
     });
   } catch (error: any) {
-    res.status(400).json({
-      success: false,
-      message: error.message || '예약 생성 중 오류가 발생했습니다.'
-    });
+    next(error);
   }
 };
 
 /**
  * 사용자의 예약 목록 조회
  */
-export const getUserAppointments = async (req: Request, res: Response): Promise<void> => {
+export const getUserAppointments = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const { userId } = req.params;
 
@@ -66,17 +75,14 @@ export const getUserAppointments = async (req: Request, res: Response): Promise<
       data: appointments
     });
   } catch (error: any) {
-    res.status(500).json({
-      success: false,
-      message: error.message || '예약 목록 조회 중 오류가 발생했습니다.'
-    });
+    next(error);
   }
 };
 
 /**
  * 사용자의 예약 통계 조회
  */
-export const getUserAppointmentStats = async (req: Request, res: Response): Promise<void> => {
+export const getUserAppointmentStats = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const { userId } = req.params;
     const stats = await appointmentService.readUserAppointmentStats(userId);
@@ -86,17 +92,14 @@ export const getUserAppointmentStats = async (req: Request, res: Response): Prom
       data: stats
     });
   } catch (error: any) {
-    res.status(500).json({
-      success: false,
-      message: error.message || '예약 통계 조회 중 오류가 발생했습니다.'
-    });
+    next(error);
   }
 }
 
 /**
  * 의사의 예약 목록 조회
  */
-export const getDoctorAppointments = async (req: Request, res: Response): Promise<void> => {
+export const getDoctorAppointments = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const { doctorId } = req.params;
 
@@ -108,17 +111,14 @@ export const getDoctorAppointments = async (req: Request, res: Response): Promis
       data: appointments
     });
   } catch (error: any) {
-    res.status(500).json({
-      success: false,
-      message: error.message || '예약 목록 조회 중 오류가 발생했습니다.'
-    });
+    next(error);
   }
 };
 
 /**
  * 특정 날짜의 예약 조회
  */
-export const getAppointmentsByDate = async (req: Request, res: Response): Promise<void> => {
+export const getAppointmentsByDate = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const { date } = req.params;
     const { doctorId } = req.query;
@@ -134,28 +134,21 @@ export const getAppointmentsByDate = async (req: Request, res: Response): Promis
       data: appointments
     });
   } catch (error: any) {
-    res.status(500).json({
-      success: false,
-      message: error.message || '예약 조회 중 오류가 발생했습니다.'
-    });
+    next(error);
   }
 };
 
 /**
  * 예약 상세 조회
  */
-export const getAppointmentById = async (req: Request, res: Response): Promise<void> => {
+export const getAppointmentById = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const { id } = req.params;
 
     const appointment = await appointmentService.readAppointmentById(id);
 
     if (!appointment) {
-      res.status(404).json({
-        success: false,
-        message: '예약을 찾을 수 없습니다.'
-      });
-      return;
+      throw new Error('예약을 찾을 수 없습니다.');
     }
 
     res.status(200).json({
@@ -164,17 +157,14 @@ export const getAppointmentById = async (req: Request, res: Response): Promise<v
       data: appointment
     });
   } catch (error: any) {
-    res.status(500).json({
-      success: false,
-      message: error.message || '예약 조회 중 오류가 발생했습니다.'
-    });
+    next(error);
   }
 };
 
 /**
  * 예약 정보 업데이트
  */
-export const updateAppointment = async (req: Request, res: Response): Promise<void> => {
+export const updateAppointment = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const { id } = req.params;
     const { date, time, duration, status, notes, reason } = req.body;
@@ -189,11 +179,7 @@ export const updateAppointment = async (req: Request, res: Response): Promise<vo
     });
 
     if (!result) {
-      res.status(404).json({
-        success: false,
-        message: '예약을 찾을 수 없습니다.'
-      });
-      return;
+      throw new Error('예약을 찾을 수 없습니다.');
     }
 
     res.status(200).json({
@@ -202,28 +188,21 @@ export const updateAppointment = async (req: Request, res: Response): Promise<vo
       data: result
     });
   } catch (error: any) {
-    res.status(400).json({
-      success: false,
-      message: error.message || '예약 업데이트 중 오류가 발생했습니다.'
-    });
+    next(error);
   }
 };
 
 /**
  * 예약 삭제
  */
-export const deleteAppointment = async (req: Request, res: Response): Promise<void> => {
+export const deleteAppointment = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const { id } = req.params;
 
     const success = await appointmentService.deleteAppointment(id);
 
     if (!success) {
-      res.status(404).json({
-        success: false,
-        message: '예약을 찾을 수 없습니다.'
-      });
-      return;
+      throw new Error('예약을 찾을 수 없습니다.');
     }
 
     res.status(200).json({
@@ -232,9 +211,29 @@ export const deleteAppointment = async (req: Request, res: Response): Promise<vo
       data: success
     });
   } catch (error: any) {
-    res.status(500).json({
-      success: false,
-      message: error.message || '예약 삭제 중 오류가 발생했습니다.'
+    next(error);
+  }
+};
+
+/**
+ * 특정 의사/날짜의 예약된 시간대 조회
+ */
+export const getBookedTimeSlots = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const { doctorId, date } = req.query as { doctorId?: string; date?: string };
+
+    if (!doctorId || !date) {
+      throw new Error('doctorId와 date(query)가 필요합니다.');
+    }
+
+    const slots = await appointmentService.readBookedTimeSlots(doctorId, new Date(date));
+
+    res.status(200).json({
+      success: true,
+      message: '예약된 시간대 조회 성공',
+      data: slots
     });
+  } catch (error: any) {
+    next(error);
   }
 };

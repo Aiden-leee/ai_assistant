@@ -9,7 +9,8 @@ import {
   deleteAppointment as removeAppointmentModel,
   CreateAppointmentData,
   UpdateAppointmentData,
-  selectUserAppointmentStats
+  selectUserAppointmentStats,
+  selectBookedTimeSlots
 } from './appointment.model';
 
 /**
@@ -30,8 +31,10 @@ export const createAppointment = async (appointmentData: CreateAppointmentData) 
   if (isTimeConflict) {
     throw new Error('해당 시간에 이미 예약이 있습니다.');
   }
-  
-  return await insertAppointmentModel(appointmentData);
+  // 예약 생성 후 관계 포함 상세 정보 반환
+  const created = await insertAppointmentModel(appointmentData);
+  const populated = await selectAppointmentByIdModel(created.id);
+  return populated ?? created;
 };
 
 /**
@@ -123,4 +126,11 @@ export const appointmentService = {
   readAppointmentById,
   modifyAppointment,
   deleteAppointment
+};
+
+/**
+ * 특정 의사/날짜의 예약된 시간대 조회 서비스
+ */
+export const readBookedTimeSlots = async (doctorId: string, date: Date) => {
+  return await selectBookedTimeSlots(doctorId, date);
 };

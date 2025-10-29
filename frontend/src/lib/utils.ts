@@ -31,3 +31,48 @@ export const formatPhoneNumber = (phone: string) => {
   return cleaned;
 
 }
+
+// 다음 5일의 날짜 배열 반환
+export const getNext5Days = () => {
+  const dates = [];
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+
+  // 다음 5일의 날짜 배열 생성
+  for (let i = 0; i < 5; i++) {
+    const date = new Date(tomorrow);
+    date.setDate(date.getDate() + i);
+    dates.push(date.toISOString().split('T')[0]);
+  }
+  return dates;
+}
+
+// 예약 가능한 시간 슬롯 배열 반환
+export const getAvailableTimeSlots = (): string[] => {
+  return [
+    "09:00",
+    "09:30",
+    "10:00",
+    "10:30",
+    "11:00",
+    "11:30",
+    "12:00",
+    "12:30",
+    "13:00",
+    "13:30",
+    "14:00",
+    "14:30",
+    "15:00",
+    "15:30",
+    "16:00",
+    "16:30",
+  ]
+}
+
+// 예약 유형 배열 반환
+export const APPOINTMENT_TYPES = [
+  { id: "checkup", name: "정기 검진", duration: "60 min", price: "$120" },
+  { id: "cleaning", name: "치아 클리닝", duration: "45 min", price: "$90" },
+  { id: "consultation", name: "상담", duration: "30 min", price: "$75" },
+  { id: "emergency", name: "응급 방문", duration: "30 min", price: "$150" },
+]

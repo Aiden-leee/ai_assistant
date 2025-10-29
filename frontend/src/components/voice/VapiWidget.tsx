@@ -1,10 +1,11 @@
 'use client'
-import { vapi } from '@/lib/vapi';
+
 import { useUser } from '@clerk/nextjs';
 import React, { useEffect, useRef, useState } from 'react'
 import { Card } from '../ui/card';
 import Image from 'next/image';
 import { Button } from '../ui/button';
+import { vapi } from '@/lib/vapi/vapi';
 
 function VapiWidget() {
     const [callActive, setCallActive] = useState(false);

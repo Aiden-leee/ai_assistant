@@ -21,3 +21,6 @@ npm install @vapi-ai/web@2.3.9
 
 ### avatar placeholder
 https://avatar.iran.liara.run/public/boy?username=[value]
+
+### nodemailer
+npm i nodemailer

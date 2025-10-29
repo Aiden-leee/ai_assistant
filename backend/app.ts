@@ -41,11 +41,29 @@ app.use('*', (req, res) => {
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   // pino-http가 있으면 구조화 에러 로그 남김
   // @ts-ignore
-  if ((req as Request).log?.error) (req as Request).log.error({ err }, 'unhandled error');
-  console.error('Error:', err);
-  res.status(500).json({
-    error: 'Internal Server Error',
-    message: '서버 내부 오류가 발생했습니다.'
+  req.log?.error({
+    message: err.message,
+    stack: err.stack,
+    body: req.body,
+    query: req.query,
+    params: req.params,
+  }, 'unhandled error');
+  // 콘솔 출력 (개발환경)
+  if (process.env.NODE_ENV !== 'production') {
+    console.error('🔥 [ERROR HANDLER]', err);
+  }
+
+  // HTTP 상태 코드 분기
+  const status =
+    (err as any).status ||                   // 직접 지정된 경우 (예: throw { status: 404 })
+    (err.name === 'ValidationError' ? 400 : undefined) || 500;
+
+  res.status(status).json({
+    success: false,
+    message:
+      process.env.NODE_ENV === 'production'
+        ? '서버 내부 오류가 발생했습니다.' // 실제 메시지는 숨김
+        : err.message,
   });
 });
 

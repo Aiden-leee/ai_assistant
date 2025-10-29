@@ -16,7 +16,13 @@ if (!databaseUrl) {
 }
 
 // Neon 데이터베이스 연결 설정
-export const sql = neon(process.env.DATABASE_URL!);
+export const sql = neon(process.env.DATABASE_URL!, {
+  // fetchOptions: {
+  //   headers: {
+  //     'accept-charset': 'utf-8',
+  //   }
+  // }
+});
 
 // 데이터베이스 연결 테스트
 export const testConnection = async (): Promise<boolean> => {

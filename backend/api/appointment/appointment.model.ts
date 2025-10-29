@@ -51,14 +51,14 @@ export interface UpdateAppointmentData {
  */
 export const insertAppointment = async (appointmentData: CreateAppointmentData): Promise<Appointment> => {
   const { date, time, duration = 30, notes, reason, userId, doctorId } = appointmentData;
-  
+
   const [appointment] = await sql`
     INSERT INTO appointments (date, time, duration, notes, reason, user_id, doctor_id)
     VALUES (${date}, ${time}, ${duration}, ${notes || null}, ${reason || null}, ${userId}, ${doctorId})
     RETURNING id, date, time, duration, status, notes, reason, 
               created_at as "createdAt", updated_at as "updatedAt", user_id as "userId", doctor_id as "doctorId"
   ` as [Appointment];
-  
+
   return appointment;
 };
 
@@ -94,10 +94,10 @@ export const selectUserAppointments = async (userId: string): Promise<Appointmen
     FROM appointments a
     LEFT JOIN users u ON a.user_id = u.id
     LEFT JOIN doctors d ON a.doctor_id = d.id
-    WHERE a.user_id = ${userId}
+    WHERE u.clerk_id = ${userId}
     ORDER BY a.date ASC, a.time ASC
   ` as [Appointment];
-  
+
   return appointments;
 };
 
@@ -132,38 +132,49 @@ export const selectDoctorAppointments = async (doctorId: string): Promise<Appoin
     WHERE a.doctor_id = ${doctorId}
     ORDER BY a.date DESC, a.time DESC
   ` as [Appointment];
-  
+
   return appointments;
 };
 
 /**
  * 특정 날짜의 예약 조회
+ * 특정 날짜(옵션으로 특정 의사 포함)의 전체 예약 내역을 상세 정보와 함께 조회
  */
-export const selectAppointmentsByDate = async (date: Date, doctorId?: string): Promise<Appointment[]> => {
-  let query = sql`
-    SELECT a.id, a.date, a.time, a.duration, a.status, a.notes, a.reason, 
-           a.created_at as "createdAt", a.updated_at as "updatedAt", 
-           a.user_id as "userId", a.doctor_id as "doctorId",
-           u.first_name as "user.firstName", u.last_name as "user.lastName", u.email as "user.email",
-           d.name as "doctor.name", d.speciality as "doctor.speciality"
+export const selectAppointmentsByDate = async (
+  date: Date,
+  doctorId?: string
+): Promise<Appointment[]> => {
+  const dateStr = date.toISOString().split("T")[0];
+
+  if (doctorId) {
+    return await sql`
+      SELECT 
+        a.id, a.date, a.time, a.duration, a.status, a.notes, a.reason, 
+        a.created_at AS "createdAt", a.updated_at AS "updatedAt", 
+        a.user_id AS "userId", a.doctor_id AS "doctorId",
+        u.first_name AS "user.firstName", u.last_name AS "user.lastName", u.email AS "user.email",
+        d.name AS "doctor.name", d.speciality AS "doctor.speciality"
+      FROM appointments a
+      LEFT JOIN users u ON a.user_id = u.id
+      LEFT JOIN doctors d ON a.doctor_id = d.id
+      WHERE DATE(a.date) = ${dateStr} AND a.doctor_id = ${doctorId}
+      ORDER BY a.time ASC
+    ` as [Appointment];
+  }
+
+  return await sql`
+    SELECT 
+      a.id, a.date, a.time, a.duration, a.status, a.notes, a.reason, 
+      a.created_at AS "createdAt", a.updated_at AS "updatedAt", 
+      a.user_id AS "userId", a.doctor_id AS "doctorId",
+      u.first_name AS "user.firstName", u.last_name AS "user.lastName", u.email AS "user.email",
+      d.name AS "doctor.name", d.speciality AS "doctor.speciality"
     FROM appointments a
     LEFT JOIN users u ON a.user_id = u.id
     LEFT JOIN doctors d ON a.doctor_id = d.id
-    WHERE DATE(a.date) = ${date.toISOString().split('T')[0]}
-  `;
-  
-  if (doctorId) {
-    query = sql`
-      ${query} AND a.doctor_id = ${doctorId}
-    `;
-  }
-  
-  query = sql`
-    ${query}
+    WHERE DATE(a.date) = ${dateStr}
     ORDER BY a.time ASC
-  `;
-  
-  return await query as [Appointment];
+  ` as [Appointment];
 };
 
 /**
@@ -181,7 +192,7 @@ export const selectAppointmentById = async (id: string): Promise<Appointment | n
     LEFT JOIN doctors d ON a.doctor_id = d.id
     WHERE a.id = ${id}
   ` as [Appointment];
-  
+
   return appointment || null;
 };
 
@@ -190,7 +201,7 @@ export const selectAppointmentById = async (id: string): Promise<Appointment | n
  */
 export const updateAppointment = async (id: string, appointmentData: UpdateAppointmentData): Promise<Appointment | null> => {
   const { date, time, duration, status, notes, reason } = appointmentData;
-  
+
   const [appointment] = await sql`
     UPDATE appointments 
     SET date = COALESCE(${date || null}, date),
@@ -204,7 +215,7 @@ export const updateAppointment = async (id: string, appointmentData: UpdateAppoi
     RETURNING id, date, time, duration, status, notes, reason, 
               created_at as "createdAt", updated_at as "updatedAt", user_id as "userId", doctor_id as "doctorId"
   ` as [Appointment];
-  
+
   return appointment || null;
 };
 
@@ -215,6 +226,24 @@ export const deleteAppointment = async (id: string): Promise<boolean> => {
   const result = await sql`
     DELETE FROM appointments WHERE id = ${id}
   ` as [Appointment];
-  
+
   return result.length > 0;
+};
+
+/**
+ * 특정 의사와 날짜에 대한 예약된 시간대 조회
+ * CONFIRMED, COMPLETED 상태를 차단 슬롯으로 간주
+ * 특정 의사(doctorId) 의 특정 날짜(date) 에 이미 예약된 시간대(time) 목록
+ */
+export const selectBookedTimeSlots = async (doctorId: string, date: Date): Promise<string[]> => {
+  const rows = await sql`
+    SELECT time
+    FROM appointments
+    WHERE doctor_id = ${doctorId}
+      AND DATE(date) = ${date.toISOString().split('T')[0]}
+      AND status IN ('CONFIRMED', 'COMPLETED')
+    ORDER BY time ASC
+  ` as [{ time: string }];
+
+  return rows.map(r => r.time);
 };

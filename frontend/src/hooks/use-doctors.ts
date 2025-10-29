@@ -1,6 +1,6 @@
 'use client';
 
-import { createDoctor, getAllActiveDoctors, updateDoctor } from "@/lib/actions/doctors/doctors";
+import { createDoctor, getAllActiveDoctors, getAvailableDoctors, updateDoctor } from "@/lib/actions/doctors/doctors";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 // 모든 활성 의사 조회 (GET)
@@ -38,5 +38,14 @@ export function useUpdateDoctor() {
         },
         onError: (error) => console.error("의사 정보 업데이트 실패:", error),
     })
+    return result;
+}
+
+// 사용 가능한 의사 조회 (GET)
+export function useAvailableDoctors() {
+    const result = useQuery({
+        queryKey: ["getAvailableDoctors"],
+        queryFn: getAvailableDoctors,
+    });
     return result;
 }

@@ -87,3 +87,18 @@ export async function updateDoctor(inputData: updateDoctorInput) {
         throw error;
     }
 }
+
+// 사용 가능한 의사 조회
+export async function getAvailableDoctors() {
+    try {
+        const doctors = await fetch(`${apiBase}/api/doctors/available`);
+        const data = await doctors.json();
+        console.log("doctors", data);
+
+        if (!data.success) throw new Error(data.message);
+        return data.data;
+    } catch (error: any) {
+        console.error("Error getAvailableDoctors:", error);
+        throw error;
+    }
+}

@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { createDoctorService, modifyDoctorService, readAllDoctorsService, readDoctorByIdService, readDoctorsBySpecialityService, removeDoctorService } from "./doctor.service";
+import { createDoctorService, modifyDoctorService, readAllDoctorsService, readAvailableDoctorsService, readDoctorByIdService, readDoctorsBySpecialityService, removeDoctorService } from "./doctor.service";
 
 // 의사 생성
 export const postDoctorController = async (req: Request, res: Response) => {
@@ -40,6 +40,23 @@ export const getAllDoctorsController = async (req: Request, res: Response) => {
         res.status(400).json({
             success: false,
             message: error.message || '모든 활성 의사 조회 중 오류가 발생했습니다.'
+        });
+    }
+}
+
+// 활성 의사 조회 (이름 오름차순, 예약 수 포함)
+export const getAvailableDoctorsController = async (req: Request, res: Response) => {
+    try {
+        const doctors = await readAvailableDoctorsService();
+        res.status(200).json({
+            success: true,
+            message: '활성 의사가 조회되었습니다.',
+            data: doctors
+        });
+    } catch (error: any) {
+        res.status(400).json({
+            success: false,
+            message: error.message || '활성 의사 조회 중 오류가 발생했습니다.'
         });
     }
 }

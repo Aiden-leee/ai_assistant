@@ -33,9 +33,9 @@ function Navbar() {
                     </Link>
 
                     {/* appointments */}
-                    <Link href="/dashboard/appointments"
+                    <Link href="/appointments"
                         className={`flex items-center gap-2 transition-colors hover:text-primary 
-                        ${pathname === "/dashboard/appointments" ?
+                        ${pathname === "/appointments" ?
                                 "text-primary font-semibold" : "text-muted-foreground"
                             }`} >
                         <CalendarIcon className="w-4 h-4" />

@@ -49,10 +49,21 @@ const httpLogger = pinoHttp({
   customSuccessMessage(req, res) {
     return `[${req.method}] ${req.url} ${res.statusCode}`; // [GET] /api/users 200
   },
-  customErrorMessage(req, res, err) {
+  customErrorMessage(req: any, res, err) {
     // 요청 실패 시 로그 메시지 생성
     // request errored with status 500: Database connection failed
-    return `[${req.method}] ${req.url} -> request errored with status ${res.statusCode}: ${err.message}`;
+    const msg = `[${req.method}] ${req.url} -> ${res.statusCode}: ${err.message}`;
+    // 스택까지 콘솔에 찍기 (개발 시)
+    if (process.env.NODE_ENV !== 'production') {
+      console.error({
+        message: err.message,
+        stack: err.stack,
+        body: req.body,
+        query: req.query,
+        params: req.params
+      });
+    }
+    return msg;
   },
   // 본문/쿼리는 기본 로그에서 제외해 라인을 짧게 유지
   // customProps(req: any) {

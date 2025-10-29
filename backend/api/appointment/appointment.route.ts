@@ -7,7 +7,8 @@ import {
   getAppointmentById,
   updateAppointment,
   deleteAppointment,
-  getUserAppointmentStats
+  getUserAppointmentStats,
+  getBookedTimeSlots
 } from './appointment.controller';
 
 const appointmentRouter = Router();
@@ -26,6 +27,9 @@ appointmentRouter.get('/user/:userId/stats', getUserAppointmentStats);
 
 // 특정 날짜의 예약 조회
 appointmentRouter.get('/date/:date', getAppointmentsByDate);
+
+// 특정 의사/날짜의 예약된 시간대 조회
+appointmentRouter.get('/booked-times', getBookedTimeSlots);
 
 // 예약 상세 조회
 appointmentRouter.get('/:id', getAppointmentById);
