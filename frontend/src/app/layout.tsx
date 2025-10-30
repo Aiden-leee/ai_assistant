@@ -45,7 +45,7 @@ export default function RootLayout({
           <body
             className={`${geistSans.variable} ${geistMono.variable} antialiased`}
           >
-            <UserSync />
+            {/* <UserSync /> */}
             {children}
             <Toaster richColors closeButton position="top-center" />
           </body>

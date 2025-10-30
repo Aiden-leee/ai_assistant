@@ -1,4 +1,4 @@
-import { APPOINTMENT_TYPES } from '@/lib/utils';
+import { APPOINTMENT_TYPES } from '@/lib/utils/utils';
 import React from 'react'
 import { Button } from '../ui/button';
 import { ChevronLeftIcon } from 'lucide-react';

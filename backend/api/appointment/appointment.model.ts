@@ -67,7 +67,7 @@ export const insertAppointment = async (appointmentData: CreateAppointmentData):
  */
 export const selectAllAppointments = async (): Promise<Appointment[]> => {
   const appointments = await sql`
-    SELECT a.id, a.date, a.time, a.duration, a.status, a.notes, a.reason,
+    SELECT a.id, TO_CHAR(a.date, 'YYYY-MM-DD') as "date", a.time, a.duration, a.status, a.notes, a.reason,
            a.created_at as "createdAt", a.updated_at as "updatedAt",
            a.user_id as "userId", a.doctor_id as "doctorId",
            u.first_name as "user.firstName", u.last_name as "user.lastName", u.email as "user.email",

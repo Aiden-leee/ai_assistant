@@ -2,12 +2,13 @@ import { Doctor } from '@/app/admin/AdminDashboard.client';
 import { useGetDoctors } from '@/hooks/use-doctors';
 import React, { useState } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
-import { EditIcon, MailIcon, PhoneIcon, PlusIcon, StethoscopeIcon } from 'lucide-react';
+import { EditIcon, MailIcon, PhoneIcon, PlusIcon, StethoscopeIcon, TrashIcon } from 'lucide-react';
 import { Button } from '../ui/button';
 import Image from 'next/image';
 import { Badge } from '../ui/badge';
 import AddDoctorDialog from './AddDoctorDialog';
 import EditDoctorDialog from './EditDoctorDialog';
+import DeleteDoctorDialog from './DeleteDoctorDialog';
 
 function DoctorsManagement() {
     const { data: doctors = [] } = useGetDoctors();
@@ -15,6 +16,7 @@ function DoctorsManagement() {
     const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
     const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
     const [selectedDoctor, setSelectedDoctor] = useState<Doctor | null>(null);
+    const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
     // 의사 수정 핸들러
     const handleEditDoctor = (doctor: Doctor) => {
@@ -25,6 +27,19 @@ function DoctorsManagement() {
     // 의사 수정 모달 닫기 핸들러
     const handleCloseEditDialog = () => {
         setIsEditDialogOpen(false);
+        setSelectedDoctor(null);
+    }
+
+    // 의사 삭제 핸들러
+    const handleDeleteDoctor = (doctor: Doctor) => {
+        console.log(doctor);
+        setSelectedDoctor(doctor);
+        setIsDeleteDialogOpen(true);
+    }
+
+    // 의사 삭제 모달 닫기 핸들러
+    const handleCloseDeleteDialog = () => {
+        setIsDeleteDialogOpen(false);
         setSelectedDoctor(null);
     }
 
@@ -106,6 +121,15 @@ function DoctorsManagement() {
                                         <EditIcon className="size-4 mr-1" />
                                         수정
                                     </Button>
+                                    <Button
+                                        size="sm"
+                                        variant="outline"
+                                        className="h-8 px-3"
+                                        onClick={() => handleDeleteDoctor(doctor)}
+                                    >
+                                        <TrashIcon className="size-4 mr-1" />
+                                        삭제
+                                    </Button>
                                 </div>
 
                             </div>
@@ -119,10 +143,18 @@ function DoctorsManagement() {
 
             {/* 의사 수정 모달 */}
             <EditDoctorDialog 
-                key={selectedDoctor?.id}
+                key={`edit-${selectedDoctor?.id}`}
                 isOpen={isEditDialogOpen}
                 onClose={handleCloseEditDialog}
                 doctor={selectedDoctor} 
+            />
+
+            {/* 의사 삭제 모달 */}
+            <DeleteDoctorDialog 
+                key={`delete-${selectedDoctor?.id}`}
+                isOpen={isDeleteDialogOpen}
+                onClose={handleCloseDeleteDialog}
+                doctor={selectedDoctor}
             />
         </>
     )

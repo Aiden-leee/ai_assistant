@@ -1,13 +1,13 @@
 'use client';
 
-import { createDoctor, getAllActiveDoctors, getAvailableDoctors, updateDoctor } from "@/lib/actions/doctors/doctors";
+import { createDoctor, deleteDoctor, getAllDoctors, getAvailableDoctors, updateDoctor } from "@/lib/actions/doctors/doctors";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-// 모든 활성 의사 조회 (GET)
+// 모든 의사 조회 (GET)
 export function useGetDoctors() {
     const result = useQuery({
-        queryKey: ["getAllActiveDoctors"],
-        queryFn: getAllActiveDoctors,
+        queryKey: ["getAllDoctors"],
+        queryFn: getAllDoctors,
     });
 
     return result;
@@ -21,7 +21,7 @@ export function useCreateDoctor() {
         mutationFn: createDoctor,
         // 성공 시 모든 의사 목록 갱신 ( 캐시 무효화 )
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["getAllActiveDoctors"] });
+            queryClient.invalidateQueries({ queryKey: ["getAllDoctors"] });
         },
         onError: (error) => console.error("의사 생성 실패:", error),
     })
@@ -34,7 +34,8 @@ export function useUpdateDoctor() {
     const result = useMutation({
         mutationFn: updateDoctor,
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["getAllActiveDoctors"] });
+            queryClient.invalidateQueries({ queryKey: ["getAllDoctors"] });
+            queryClient.invalidateQueries({ queryKey: ["getAvailableDoctors"] });
         },
         onError: (error) => console.error("의사 정보 업데이트 실패:", error),
     })
@@ -47,5 +48,21 @@ export function useAvailableDoctors() {
         queryKey: ["getAvailableDoctors"],
         queryFn: getAvailableDoctors,
     });
+    return result;
+}
+
+// 의사 삭제 (DELETE)
+export function useDeleteDoctor() {
+    const queryClient = useQueryClient();
+    const result = useMutation({
+        mutationFn: deleteDoctor,
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["getAllDoctors"] });
+            queryClient.invalidateQueries({ queryKey: ["getAvailableDoctors"] });
+            // 의사 삭제 시 최근 예약 및 대시보드 통계를 위한 예약 목록도 갱신
+            queryClient.invalidateQueries({ queryKey: ["getAllAppointments"] });
+        },
+        onError: (error) => console.error("의사 삭제 실패:", error),
+    })
     return result;
 }

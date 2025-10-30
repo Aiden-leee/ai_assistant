@@ -1,6 +1,6 @@
 import { ChevronRightIcon } from "lucide-react";
 
-const PROGRESS_STEPS = ["병원 선택", "날짜 및 시간 선택", "예약 정보 확인"];
+const PROGRESS_STEPS = ["의사 선택", "날짜 및 시간 선택", "예약 정보 확인"];
 
 function ProgressSteps({ currentStep }: { currentStep: number }) {
     return (

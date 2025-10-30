@@ -4,7 +4,7 @@ import React, { useRef, useState } from 'react'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '../ui/dialog';
 import DoctorFormFields, { DoctorFormState } from './DoctorFormFields';
 import { Button } from '../ui/button';
-import { formatPhoneNumber } from '@/lib/utils';
+import { formatPhoneNumber } from '@/lib/utils/utils';
 import { toast } from 'sonner';
 
 interface AddDoctorDialogProps {

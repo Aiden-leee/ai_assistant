@@ -66,12 +66,15 @@ export const insertDoctor = async (doctorData: CreateDoctorData): Promise<Doctor
 
 /**
  * 모든 의사 조회
+ * 모든 의사 조회 (이름 오름차순, 예약 수 포함)
  */
 export const selectAllDoctors = async (): Promise<Doctor[]> => {
   const doctors = await sql`
     SELECT d.id, d.name, d.email, d.phone, d.speciality, d.bio, d.image_url as "imageUrl",
        d.gender, d.is_active as "isActive", d.created_at as "createdAt", d.updated_at as "updatedAt",
-       (SELECT COUNT(*) FROM appointments a WHERE a.doctor_id = d.id) AS "appointmentCount"
+       (SELECT COUNT(*) 
+       FROM appointments a 
+       WHERE a.doctor_id = d.id) AS "appointmentCount"
     FROM doctors d
     ORDER BY d.created_at DESC
   ` as [Doctor];
@@ -128,6 +131,7 @@ export const selectDoctorsBySpeciality = async (speciality: string): Promise<Doc
 
 /**
  * 의사 정보 업데이트
+ * (이름, 이메일, 전화번호, 전문과목, 소개, 이미지, 성별, 활성 여부)
  */
 export const updateDoctor = async (id: string, doctorData: UpdateDoctorData): Promise<Doctor | null> => {
   const { name, email, phone, speciality, bio, imageUrl, gender, isActive } = doctorData;
@@ -162,14 +166,14 @@ export const updateDoctor = async (id: string, doctorData: UpdateDoctorData): Pr
 };
 
 /**
- * 의사 삭제 (비활성화)
+ * 의사 삭제
  */
 export const deleteDeactivateDoctor = async (id: string): Promise<boolean> => {
   const result = await sql`
-    UPDATE doctors 
-    SET is_active = false, updated_at = NOW()
+    DELETE FROM doctors 
     WHERE id = ${id}
-  ` as [Doctor];
+    RETURNING email;
+  `;
 
-  return result.length > 0;
+  return result[0].email;
 };

@@ -27,19 +27,19 @@ export const postDoctorController = async (req: Request, res: Response) => {
     }
 }
 
-// 모든 활성 의사 조회
+// 모든 의사 조회
 export const getAllDoctorsController = async (req: Request, res: Response) => {
     try {
         const doctors = await readAllDoctorsService();
         res.status(200).json({
             success: true,
-            message: '모든 활성 의사가 조회되었습니다.',
+            message: '모든 의사가 조회되었습니다.',
             data: doctors
         });
     } catch (error: any) {
         res.status(400).json({
             success: false,
-            message: error.message || '모든 활성 의사 조회 중 오류가 발생했습니다.'
+            message: error.message || '모든 의사 조회 중 오류가 발생했습니다.'
         });
     }
 }
@@ -48,6 +48,7 @@ export const getAllDoctorsController = async (req: Request, res: Response) => {
 export const getAvailableDoctorsController = async (req: Request, res: Response) => {
     try {
         const doctors = await readAvailableDoctorsService();
+        
         res.status(200).json({
             success: true,
             message: '활성 의사가 조회되었습니다.',

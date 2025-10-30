@@ -2,12 +2,13 @@
 
 import AdminStats from "@/components/admin/AdminStats";
 import DoctorsManagement from "@/components/admin/DoctorsManagement";
+import RecentAppointments from "@/components/admin/RecentAppointments";
 import LoadingUI from "@/components/commons/LoadingUI";
 import Navbar from "@/components/commons/Navbar";
 import { useGetAppointments } from "@/hooks/use-appointment";
 import { useGetDoctors } from "@/hooks/use-doctors";
 import { useUser } from "@clerk/nextjs";
-import { Loader2Icon, SettingsIcon } from "lucide-react";
+import { SettingsIcon } from "lucide-react";
 
 export interface Doctor {
   id: string;
@@ -107,6 +108,8 @@ function AdminDashboardClient() {
             />
 
             <DoctorsManagement />
+
+            <RecentAppointments />
           </div>
         </>
       )}

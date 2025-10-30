@@ -96,6 +96,7 @@ export const modifyAppointment = async (id: string, appointmentData: UpdateAppoi
     const doctorId = existingAppointment.doctorId;
     
     const existingAppointments = await selectAppointmentsByDateModel(checkDate, doctorId);
+    // 예약 시간 중복 확인
     const isTimeConflict = existingAppointments.some(apt => 
       apt.id !== id && 
       apt.time === checkTime && 

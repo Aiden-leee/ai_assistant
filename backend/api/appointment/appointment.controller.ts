@@ -69,6 +69,7 @@ export const getUserAppointments = async (req: Request, res: Response, next: Nex
 
     const appointments = await appointmentService.readUserAppointments(userId);
 
+    console.log("getUserAppointments", appointments);
     res.status(200).json({
       success: true,
       message: '사용자의 예약 목록 조회 성공',

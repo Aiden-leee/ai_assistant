@@ -1,4 +1,5 @@
 import { clsx, type ClassValue } from "clsx"
+import dayjs from "./dayjs";
 import { twMerge } from "tailwind-merge"
 
 export function cn(...inputs: ClassValue[]) {
@@ -42,9 +43,17 @@ export const getNext5Days = () => {
   for (let i = 0; i < 5; i++) {
     const date = new Date(tomorrow);
     date.setDate(date.getDate() + i);
-    dates.push(date.toISOString().split('T')[0]);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    dates.push(`${year}-${month}-${day}`); // 로컬 타임존 기준 YYYY-MM-DD
   }
   return dates;
+}
+
+// 로컬 타임존 기준으로 'YYYY-MM-DD' 날짜로 변환
+export function formatLocalDate(utcDateString: string) {
+  return dayjs.utc(utcDateString).local().format("YYYY-MM-DD (ddd)");
 }
 
 // 예약 가능한 시간 슬롯 배열 반환

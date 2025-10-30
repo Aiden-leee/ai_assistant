@@ -145,6 +145,17 @@ npm start
 - 적절한 HTTP 상태 코드
 - 한국어 에러 메시지
 
-## 📝 라이선스
 
-MIT License
+
+
+## 설치 패키지
+
+### swagger-jsdoc
+npm i swagger-jsdoc swagger-ui-express
+
+### nodemailer
+npm i nodemailer
+npm i --save-dev @types/nodemailer
+
+### pino
+npm i pino pino-http

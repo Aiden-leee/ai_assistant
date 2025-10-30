@@ -1,12 +1,14 @@
 'use client';
 
+import { AppointmentConfirmationModal } from "@/components/appointments/AppointmentConfirmationModal";
 import BookingConfirmationStep from "@/components/appointments/BookingConfirmationStep";
 import DoctorSelectionStep from "@/components/appointments/DoctorSelectionStep";
 import ProgressSteps from "@/components/appointments/ProgressSteps";
 import TimeSelectionStep from "@/components/appointments/TimeSelectionStep";
 import Navbar from "@/components/commons/Navbar";
 import { useBookAppointment, useUserAppointment } from "@/hooks/use-appointment";
-import { APPOINTMENT_TYPES } from "@/lib/utils";
+import { postSendEmail } from "@/lib/actions/email/mailer";
+import { APPOINTMENT_TYPES, formatLocalDate } from "@/lib/utils/utils";
 import { format } from "date-fns";
 import Image from "next/image";
 import { useState } from "react";
@@ -17,7 +19,7 @@ function AppointmentsPage() {
     const [selectedDate, setSelectedDate] = useState("");
     const [selectedTime, setSelectedTime] = useState("");
     const [selectedType, setSelectedType] = useState("");
-    const [currentStep, setCurrentStep] = useState(1); // 1: 병원 선택, 2: 날짜 및 시간 선택, 3: 예약 정보 확인
+    const [currentStep, setCurrentStep] = useState(1); // 1: 의사 선택, 2: 날짜 및 시간 선택, 3: 예약 정보 확인
     const [showConfirmationModal, setShowConfirmationModal] = useState(false);
     const [bookedAppointment, setBookedAppointment] = useState<any>(null);
 
@@ -58,6 +60,24 @@ function AppointmentsPage() {
             {
                 onSuccess: async (appointment) => {
                     setBookedAppointment(appointment);
+                    console.log("appointment---------", appointment);
+
+                    try {
+                        // 이메일 전송
+                        await postSendEmail({
+                            userEmail: appointment.patientEmail,
+                            doctorName: appointment.doctorName,
+                            appointmentDate: selectedDate,
+                            appointmentTime: appointment.time,
+                            appointmentType: appointmentType?.name || "",
+                            duration: appointmentType?.duration || "",
+                            price: appointmentType?.price || "",
+                        });
+                        
+                    } catch (error) {
+                        console.error("Error postSendEmail:", error);
+                        toast.error("이메일 전송 실패: 잠시후 다시 시도해주세요.");
+                    }
 
                     // 예약 성공 모달 표시
                     setShowConfirmationModal(true);
@@ -131,6 +151,20 @@ function AppointmentsPage() {
 
             </div>
 
+            {/* 예약 성공 모달 */}
+            {bookedAppointment && (
+                <AppointmentConfirmationModal 
+                    open={showConfirmationModal}
+                    onOpenChange={setShowConfirmationModal}
+                    appointmentDetails={{
+                        doctorName: bookedAppointment.doctorName,
+                        appointmentDate: bookedAppointment.date,
+                        appointmentTime: bookedAppointment.time,
+                        userEmail: bookedAppointment.patientEmail,
+                    }}
+                />
+            )}
+
             {/* 현재 유저의 예약 목록 표시 */}
             {userAppointments.length > 0 && (
                 <div className="mb-8 max-w-7xl mx-auto px-6 py-8">
@@ -157,7 +191,7 @@ function AppointmentsPage() {
                                 </div>
                                 <div className="space-y-1 text-sm">
                                     <p className="text-muted-foreground">
-                                        📅 {format(new Date(appointment.date), "MMM d, yyyy")}
+                                        📅 {appointment.date}
                                     </p>
                                     <p className="text-muted-foreground">🕐 {appointment.time}</p>
                                 </div>

@@ -19,7 +19,7 @@ function DoctorSelectionStep({
     selectedDentistId,
 }: DoctorSelectionStepProps) {
     const { data: doctors = [], isLoading } = useAvailableDoctors();
-
+    console.log("doctors--테스트----", doctors);
     return (
         <div className="space-y-6">
             <h2 className="text-2xl font-semibold">치과의사를 선택하세요</h2>

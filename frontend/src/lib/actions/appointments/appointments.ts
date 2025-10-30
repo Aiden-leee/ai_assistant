@@ -1,6 +1,7 @@
 'use server';
 
 import { apiBase } from "@/lib/constants";
+import { formatLocalDate } from "@/lib/utils/utils";
 import { auth } from "@clerk/nextjs/server";
 
 
@@ -19,7 +20,7 @@ function transformAppointment(appointment: any) {
         patientEmail: userEmail,
         doctorName,
         doctorImageUrl,
-        date: new Date(appointment.date).toISOString().split('T')[0],
+        date: formatLocalDate(appointment.date.toString()),
     }
 }
 
@@ -28,11 +29,10 @@ export async function getAllAppointments() {
     try {
         const appointments = await fetch(`${apiBase}/api/appointments`);
         const data = await appointments.json();
-        if (data.success) {
-            return data.data;
-        } else {
-            throw new Error(data.message);
+        if (!data.success) {
+            throw new Error(data.message || "Failed to fetch appointments");
         }
+        return data.data.map(transformAppointment);
     } catch (error) {
         console.error("Error getAllAppointments:", error);
         throw error;
@@ -54,7 +54,7 @@ export async function getUserAppointments() {
         const appointments = await fetch(`${apiBase}/api/appointments/user/${userId}`);
         const resp = await appointments.json();
 
-        console.log("getUserAppointments resp", resp);
+        console.log("getUserAppointments resp111", resp);
         if (!resp.success) throw new Error(resp.message || "Failed to fetch appointments");
         return resp.data.map(transformAppointment);
     } catch (error) {
@@ -63,7 +63,7 @@ export async function getUserAppointments() {
     }
 }
 
-// 사용자의 예약 가져오기
+// 사용자의 예약 통계 가져오기
 export async function getUserAppointmentStats() {
     try {
         const { userId } = await auth();
@@ -114,16 +114,18 @@ export async function postAppointment(input: AppointmentInput) {
         const { userId } = await auth();
         if (!userId) throw new Error("Unauthorized");
 
-        if(!input.doctorId || !input.date || !input.time) {
+        if (!input.doctorId || !input.date || !input.time) {
             throw new Error("의사, 날짜, 시간은 필수 입력 항목입니다.");
         }
 
         // 사용자 정보 조회
         const user = await fetch(`${apiBase}/api/auth/profile/${userId}`);
-        if(!user.ok) throw new Error("User not found");
+        if (!user.ok) throw new Error("User not found");
+        const userData = await user.json();
 
         const inputData = {
             ...input,
+            userEmail: userData.data.email,
             userId: userId,
             doctorId: input.doctorId,
             date: input.date,
@@ -142,12 +144,42 @@ export async function postAppointment(input: AppointmentInput) {
             body: JSON.stringify(inputData),
         });
         const data = await resp.json();
+
+        console.log("data---------", data.data);
         if (!resp.ok || !data.success) {
             throw new Error(data.message || '예약 실패: 예약 정보를 확인해주세요.');
         }
         return transformAppointment(data.data);
     } catch (error) {
         console.error('Error postAppointment:', error);
+        throw error;
+    }
+}
+
+interface UpdateAppointmentStatusInput {
+    id: string;
+    status: 'CONFIRMED' | 'COMPLETED';
+}
+
+// 예약 상태 업데이트
+export async function updateAppointmentStatus(input: UpdateAppointmentStatusInput) {
+    try {
+
+        const resp = await fetch(`${apiBase}/api/appointments/${input.id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept-Charset': 'utf-8',
+            },
+            body: JSON.stringify(input),
+        });
+        const data = await resp.json();
+        if (!resp.ok || !data.success) {
+            throw new Error(data.message || 'Failed to update appointment status');
+        }
+        return data.data;
+    } catch (error) {
+        console.error("Error updateAppointmentStatus:", error);
         throw error;
     }
 }

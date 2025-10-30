@@ -1,12 +1,9 @@
 import { Doctor } from '@/app/admin/AdminDashboard.client';
 import { useUpdateDoctor } from '@/hooks/use-doctors';
-import { formatPhoneNumber } from '@/lib/utils';
+import { formatPhoneNumber } from '@/lib/utils/utils';
 import DoctorFormFields, { DoctorFormState } from './DoctorFormFields';
 import React, { useState } from 'react'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '../ui/dialog';
-import { Label } from '../ui/label';
-import { Input } from '../ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Button } from '../ui/button';
 
 interface EditDoctorDialogProps {

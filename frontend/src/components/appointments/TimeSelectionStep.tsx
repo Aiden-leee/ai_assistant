@@ -1,5 +1,5 @@
 import { useBookedTimeSlots } from '@/hooks/use-appointment';
-import { APPOINTMENT_TYPES, getAvailableTimeSlots, getNext5Days } from '@/lib/utils';
+import { APPOINTMENT_TYPES, getAvailableTimeSlots, getNext5Days } from '@/lib/utils/utils';
 import React from 'react'
 import { Button } from '../ui/button';
 import { ChevronLeftIcon, ClockIcon } from 'lucide-react';
@@ -37,6 +37,17 @@ function TimeSelectionStep({
     const handleDateSelect = (date: string) => {
         onDateChange(date);
         onTimeChange('');
+    }
+
+    // 로컬 타임존 기준으로 'YYYY-MM-DD' 날짜로 변환
+    const formatDateForDisplay = (dateString: string) => {
+        const [year, month, day] = dateString.split('-').map(Number);
+        const localDate = new Date(year, month - 1, day);
+        return localDate.toLocaleDateString("ko-KR", {
+            weekday: "short",
+            month: "short",
+            day: "numeric",
+        });
     }
 
     return (
@@ -90,11 +101,7 @@ function TimeSelectionStep({
                             >
                                 <div className="text-center">
                                     <div className="font-medium">
-                                        {new Date(date).toLocaleDateString("ko-KR", {
-                                            weekday: "short",
-                                            month: "short",
-                                            day: "numeric",
-                                        })}
+                                    {formatDateForDisplay(date)}
                                     </div>
                                 </div>
                             </Button>

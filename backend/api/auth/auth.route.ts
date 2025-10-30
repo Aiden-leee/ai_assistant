@@ -20,4 +20,4 @@ authRouter.put('/profile/:clerkId', putUserProfile);
 // 사용자 삭제
 authRouter.delete('/profile/:clerkId', deleteUser);
 
-export { authRouter };
+export default authRouter;

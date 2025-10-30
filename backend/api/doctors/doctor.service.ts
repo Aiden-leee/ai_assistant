@@ -6,7 +6,7 @@ export const createDoctorService = async (doctorData: CreateDoctorData) => {
     return await insertDoctor(doctorData);
 }
 
-// 모든 활성 의사 조회 서비스
+// 모든 의사 조회 서비스
 export const readAllDoctorsService = async () => {
     return await selectAllDoctors();
 }

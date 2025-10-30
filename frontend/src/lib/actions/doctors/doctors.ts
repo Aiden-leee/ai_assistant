@@ -1,7 +1,7 @@
 'use server';
 
 import { apiBase } from "@/lib/constants";
-import { generateAvatar } from "@/lib/utils";
+import { generateAvatar } from "@/lib/utils/utils";
 import { revalidatePath } from "next/cache";
 
 export interface CreateDoctor {
@@ -17,10 +17,10 @@ export interface updateDoctorInput extends Partial<CreateDoctor> {
     id: string;
 }
 
-// 모든 활성 의사 조회
-export async function getAllActiveDoctors() {
+// 모든 의사 조회
+export async function getAllDoctors() {
     try {
-        const doctors = await fetch(`${apiBase}/api/doctors/active`);
+        const doctors = await fetch(`${apiBase}/api/doctors/all`);
         const data = await doctors.json();
         console.log("doctors", data);
 
@@ -31,7 +31,7 @@ export async function getAllActiveDoctors() {
         return data.data;
 
     } catch (error) {
-        console.error("Error getAllActiveDoctors:", error);
+        console.error("Error getAllDoctors:", error);
         throw error;
     }
 }
@@ -93,12 +93,29 @@ export async function getAvailableDoctors() {
     try {
         const doctors = await fetch(`${apiBase}/api/doctors/available`);
         const data = await doctors.json();
-        console.log("doctors", data);
 
         if (!data.success) throw new Error(data.message);
-        return data.data;
+        return data.data ?? [];
     } catch (error: any) {
         console.error("Error getAvailableDoctors:", error);
+        throw error;
+    }
+}
+
+// 의사 삭제
+export async function deleteDoctor(id: string) {
+    console.log("deleteDoctor", id);
+    try {
+        const resp = await fetch(`${apiBase}/api/doctors/${id}`, {
+            method: "DELETE",
+        });
+        const data = await resp.json();
+        if (!data.success) {
+            throw new Error(data.message);
+        }
+        return data.data;
+    } catch (error: any) {
+        console.error("Error deleteDoctor:", error);
         throw error;
     }
 }

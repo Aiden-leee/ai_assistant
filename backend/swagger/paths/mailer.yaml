@@ -1,0 +1,42 @@
+openapi: 3.0.3
+info:
+  title: Mailer Paths
+  version: 1.0.0
+paths:
+  /mailer/send-email:
+    post:
+      tags: [Mailer]
+      summary: 이메일 전송
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                  description: 이메일 주소
+                subject:
+                  type: string
+                  description: 이메일 제목
+                html:
+                  type: string
+                  description: 이메일 내용
+              required: [email, subject, html]
+      responses:
+        200:
+          description: 이메일 전송 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        400:
+          description: 이메일 전송 실패
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+        - BearerAuth: []
