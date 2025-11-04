@@ -1,10 +1,13 @@
-import { SignUpButton } from '@clerk/nextjs'
+"use client";
+import { SignUpButton, SignedIn, SignedOut } from '@clerk/nextjs'
 import { ArrowRightIcon, ZapIcon } from 'lucide-react'
 import Image from 'next/image'
 import React from 'react'
 import { Button } from '../ui/button'
+import { useRouter } from 'next/navigation'
 
 function HowItWorks() {
+  const router = useRouter();
   return (
     <section className='relative py-32 px-6 outline-hidden z-10 max-w-7xl mx-auto'>
       {/* header */}
@@ -131,12 +134,20 @@ function HowItWorks() {
 
       {/* BOTTOM CTA */}
       <div className="text-center mt-16">
-        <SignUpButton mode="modal">
-          <Button size="lg">
+        <SignedIn>
+          <Button size="lg" onClick={() => router.push('/dashboard')}>
             <ArrowRightIcon className="mr-2 size-5" />
             지금 시작하기
           </Button>
-        </SignUpButton>
+        </SignedIn>
+        <SignedOut>
+          <SignUpButton mode="modal">
+            <Button size="lg">
+              <ArrowRightIcon className="mr-2 size-5" />
+              지금 시작하기
+            </Button>
+          </SignUpButton>
+        </SignedOut>
       </div>
     </section>
   )

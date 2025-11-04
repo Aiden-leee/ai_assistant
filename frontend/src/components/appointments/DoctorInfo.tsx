@@ -16,6 +16,10 @@ function DoctorInfo({ doctorId }: { doctorId: string }) {
                 width={48}
                 height={48}
                 className="w-12 h-12 rounded-full object-cover"
+                unoptimized
+                onError={(e) => { 
+                    (e.currentTarget as HTMLImageElement).src = '/logo.png'; 
+                }}
             />
             <div>
                 <h3 className="font-medium">{doctor.name}</h3>

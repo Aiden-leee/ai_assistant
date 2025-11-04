@@ -50,11 +50,13 @@ export const modifyUserProfile = async (clerkId: string, userData: UpdateUserDat
  * 사용자 삭제
  */
 export const removeUser = async (clerkId: string) => {
+  // 사용자 조회
   const user = await selectUserByClerkId(clerkId);
   if (!user) {
-    return false;
+    throw new Error('사용자를 찾을 수 없습니다.');
   }
   
+  // 사용자 삭제
   return await deleteUser(user.id);
 };
 

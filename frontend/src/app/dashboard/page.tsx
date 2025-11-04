@@ -4,9 +4,11 @@ import MainActions from '@/components/dashboard/MainActions';
 import WelcomeSection from '@/components/dashboard/WelcomeSection';
 import React from 'react'
 
+
 async function DashboardPage() {
   return (
     <div>
+
       <Navbar />
 
       <div className="max-w-7xl mx-auto px-6 py-8 pt-24">
@@ -14,6 +16,7 @@ async function DashboardPage() {
         <MainActions />
         <ActivityOverview />
       </div>
+
     </div>
   )
 }

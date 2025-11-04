@@ -1,8 +1,11 @@
+"use client";
 import { Button } from "@/components/ui/button";
-import { SignUpButton } from "@clerk/nextjs";
+import { SignUpButton, SignedIn, SignedOut, SignInButton } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
 import { CheckCircleIcon } from "lucide-react";
 
 function PricingSection() {
+  const router = useRouter();
   return (
     <section className="relative py-32 px-6 overflow-hidden bg-gradient-to-b from-background via-muted/3 to-background">
       {/* Grid Background Pattern */}
@@ -49,11 +52,21 @@ function PricingSection() {
                   </div>
                   <p className="text-muted-foreground">필수 치과 예약</p>
                 </div>
-                <SignUpButton mode="modal">
-                  <Button className="w-full py-3 bg-gradient-to-r from-muted to-muted/80 text-foreground rounded-xl font-semibold">
+                <SignedIn>
+                  <Button
+                    className="w-full py-3 bg-gradient-to-r from-muted to-muted/80 text-foreground rounded-xl font-semibold"
+                    onClick={() => router.push('/dashboard')}
+                  >
                     Get Started Free
                   </Button>
-                </SignUpButton>
+                </SignedIn>
+                <SignedOut>
+                  <SignUpButton mode="modal">
+                    <Button className="w-full py-3 bg-gradient-to-r from-muted to-muted/80 text-foreground rounded-xl font-semibold">
+                      Get Started Free
+                    </Button>
+                  </SignUpButton>
+                </SignedOut>
 
                 <div className="space-y-4">
                   <div className="flex items-start gap-3">
@@ -99,9 +112,21 @@ function PricingSection() {
                   <p className="text-muted-foreground">AI 컨설팅 + 예약</p>
                 </div>
 
-                <Button className="w-full py-3 bg-gradient-to-r from-primary to-primary/90 hover:from-primary/95 hover:to-primary/85 text-primary-foreground rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300">
-                  Start AI Basic
-                </Button>
+                <SignedIn>
+                  <Button
+                    className="w-full py-3 bg-gradient-to-r from-primary to-primary/90 hover:from-primary/95 hover:to-primary/85 text-primary-foreground rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
+                    onClick={() => router.push('/pro')}
+                  >
+                    Start AI Basic
+                  </Button>
+                </SignedIn>
+                <SignedOut>
+                  <SignInButton mode="modal">
+                    <Button className="w-full py-3 bg-gradient-to-r from-primary to-primary/90 hover:from-primary/95 hover:to-primary/85 text-primary-foreground rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300">
+                      Start AI Basic
+                    </Button>
+                  </SignInButton>
+                </SignedOut>
 
                 <div className="space-y-4">
                   <div className="flex items-start gap-3">
@@ -146,12 +171,25 @@ function PricingSection() {
                   <p className="text-muted-foreground">무제한 AI 컨설팅</p>
                 </div>
 
-                <Button
-                  variant="outline"
-                  className="w-full py-3 border-2 border-primary/20 hover:border-primary/40 hover:bg-primary/5 rounded-xl font-semibold transition-all duration-300"
-                >
-                  Upgrade to AI Pro
-                </Button>
+                <SignedIn>
+                  <Button
+                    variant="outline"
+                    className="w-full py-3 border-2 border-primary/20 hover:border-primary/40 hover:bg-primary/5 rounded-xl font-semibold transition-all duration-300"
+                    onClick={() => router.push('/pro')}
+                  >
+                    Upgrade to AI Pro
+                  </Button>
+                </SignedIn>
+                <SignedOut>
+                  <SignInButton mode="modal">
+                    <Button
+                      variant="outline"
+                      className="w-full py-3 border-2 border-primary/20 hover:border-primary/40 hover:bg-primary/5 rounded-xl font-semibold transition-all duration-300"
+                    >
+                      Upgrade to AI Pro
+                    </Button>
+                  </SignInButton>
+                </SignedOut>
 
                 <div className="space-y-4">
                   <div className="flex items-start gap-3">

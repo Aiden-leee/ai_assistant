@@ -1,4 +1,4 @@
-import { currentUser } from '@clerk/nextjs/server';
+import { auth, currentUser } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import React from 'react'
 import AdminDashboardClient from './AdminDashboard.client';
@@ -9,6 +9,14 @@ async function AdminPage() {
     // 로그인 안되어 있으면 홈으로 리다이렉트
     if (!user) redirect('/');
 
+    // admin role 체크 - private metadata에서 role 확인
+    const isAdmin = user.privateMetadata?.role === 'admin' || false;
+
+    // admin role이 없으면 대시보드로 리다이렉트
+    if (!isAdmin) {
+        redirect('/dashboard');
+    }
+
     // 관리자 이메일
     const adminEmail = process.env.ADMIN_EMAIL;
     // 사용자 이메일
@@ -16,6 +24,7 @@ async function AdminPage() {
 
     // 관리자 이메일이 아니면 홈으로 리다이렉트
     if (!adminEmail || userEmail !== adminEmail) redirect('/dashboard');
+
     return (
         <AdminDashboardClient />
     )

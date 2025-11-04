@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 
 function Footer() {
   return (
@@ -22,17 +23,17 @@ function Footer() {
           </div>
 
           <div>
-            <h4 className="font-medium mb-3">Product</h4>
+            <h4 className="font-medium mb-3">제품</h4>
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li>
-                <a href="#" className="hover:text-foreground">
-                  How it works
-                </a>
+                <Link href="/how-it-works" className="hover:text-foreground">
+                  작동 방식   
+                </Link>
               </li>
               <li>
-                <a href="#" className="hover:text-foreground">
-                  Pricing
-                </a>
+                <Link href="/pro" className="hover:text-foreground">
+                  가격
+                </Link>
               </li>
               <li>
                 <a href="#" className="hover:text-foreground">
@@ -43,42 +44,42 @@ function Footer() {
           </div>
 
           <div>
-            <h4 className="font-medium mb-3">Support</h4>
+            <h4 className="font-medium mb-3">지원</h4>
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li>
                 <a href="#" className="hover:text-foreground">
-                  Help center
+                  도움말 센터
                 </a>
               </li>
               <li>
-                <a href="#" className="hover:text-foreground">
-                  Contact us
-                </a>
+                <Link href="/contact" className="hover:text-foreground">
+                  문의하기
+                </Link>
               </li>
               <li>
                 <a href="#" className="hover:text-foreground">
-                  Status
+                  상태
                 </a>
               </li>
             </ul>
           </div>
 
           <div>
-            <h4 className="font-medium mb-3">Legal</h4>
+            <h4 className="font-medium mb-3">정책</h4>
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li>
                 <a href="#" className="hover:text-foreground">
-                  Privacy
+                  개인정보 처리방침
                 </a>
               </li>
               <li>
                 <a href="#" className="hover:text-foreground">
-                  Terms
+                  이용 약관
                 </a>
               </li>
               <li>
                 <a href="#" className="hover:text-foreground">
-                  Security
+                  보안
                 </a>
               </li>
             </ul>

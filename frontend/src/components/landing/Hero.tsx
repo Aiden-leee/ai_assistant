@@ -1,12 +1,15 @@
-import { SignUpButton } from '@clerk/nextjs'
+"use client";
+import { SignInButton, SignUpButton, SignedIn, SignedOut } from '@clerk/nextjs'
 import React from 'react'
 import { Button } from '../ui/button'
 import { CalendarIcon, MicIcon, StarIcon } from 'lucide-react'
 import Image from 'next/image'
+import { useRouter } from 'next/navigation'
 
 function Hero() {
+  const router = useRouter();
   return (
-    <section className="relative h-screen flex items-center overflow-hidden pt-20">
+    <section className="relative min-h-[calc(100svh-4rem)] flex items-center pt-20">
       <div className="absolute inset-0 bg-gradient-to-br from-background via-muted/5 to-primary/5">
         <div className="absolute inset-0 
         bg-[linear-gradient(to_right,#aaa_1px,transparent_1px),linear-gradient(to_bottom,#aaa_1px,transparent_1px)]
@@ -56,18 +59,43 @@ function Hero() {
 
                 {/* CTA 버튼 */}
                 <div className="flex flex-col sm:flex-row gap-4">
-                  <SignUpButton mode='modal'>
-                    <Button size="lg" className="items-center">
+                  <SignedIn>
+                    <Button
+                      size="lg"
+                      className="items-center"
+                      onClick={() => router.push('/voice')}
+                    >
                       <MicIcon className="mr-2 size-5" />
                       음성 AI 대화 시작
                     </Button>
-                  </SignUpButton>
-                  <SignUpButton mode='modal'>
-                    <Button size="lg" variant="outline" className="items-center">
+                  </SignedIn>
+                  <SignedOut>
+                    <SignInButton mode='modal'>
+                      <Button size="lg" className="items-center">
+                        <MicIcon className="mr-2 size-5" />
+                        음성 AI 대화 시작
+                      </Button>
+                    </SignInButton>
+                  </SignedOut>
+                  <SignedIn>
+                    <Button
+                      size="lg"
+                      variant="outline"
+                      className="items-center"
+                      onClick={() => router.push('/appointments')}
+                    >
                       <CalendarIcon className="mr-2 size-5" />
                       일정 예약하기
                     </Button>
-                  </SignUpButton>
+                  </SignedIn>
+                  <SignedOut>
+                    <SignInButton mode='modal'>
+                      <Button size="lg" variant="outline" className="items-center">
+                        <CalendarIcon className="mr-2 size-5" />
+                        일정 예약하기
+                      </Button>
+                    </SignInButton>
+                  </SignedOut>
                 </div>
 
                 {/* 사용자 추천 */}

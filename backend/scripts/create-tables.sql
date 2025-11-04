@@ -77,3 +77,33 @@ CREATE TRIGGER update_appointments_updated_at
 BEFORE UPDATE ON appointments
 FOR EACH ROW 
 EXECUTE FUNCTION update_updated_at_column();
+
+-- 음성 통화 테이블 생성
+CREATE TABLE IF NOT EXISTS voice_calls (
+    id VARCHAR(255) PRIMARY KEY DEFAULT gen_random_uuid()::text,
+    user_id VARCHAR(255) NOT NULL,
+    duration INTEGER DEFAULT 0,
+    status VARCHAR(20) DEFAULT 'COMPLETED' CHECK (status IN ('COMPLETED', 'FAILED')),
+    created_at TIMESTAMP DEFAULT NOW(),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+-- 인덱스 생성
+CREATE INDEX IF NOT EXISTS idx_voice_calls_user_id ON voice_calls(user_id);
+CREATE INDEX IF NOT EXISTS idx_voice_calls_created_at ON voice_calls(created_at);
+CREATE INDEX IF NOT EXISTS idx_voice_calls_user_created ON voice_calls(user_id, created_at);
+
+-- 음성 통화 메시지 테이블 생성
+CREATE TABLE IF NOT EXISTS voice_messages (
+    id VARCHAR(255) PRIMARY KEY DEFAULT gen_random_uuid()::text,
+    call_id VARCHAR(255) NOT NULL,
+    role VARCHAR(20) NOT NULL CHECK (role IN ('assistant', 'user')),
+    content TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT NOW(),
+    message_time TIMESTAMP DEFAULT NOW(),
+    FOREIGN KEY (call_id) REFERENCES voice_calls(id) ON DELETE CASCADE
+);
+
+-- 인덱스 생성
+CREATE INDEX IF NOT EXISTS idx_voice_messages_call_id ON voice_messages(call_id);
+CREATE INDEX IF NOT EXISTS idx_voice_messages_created_at ON voice_messages(created_at);

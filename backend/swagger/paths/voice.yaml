@@ -1,0 +1,281 @@
+openapi: 3.0.3
+info:
+  title: Voice Paths
+  version: 1.0.0
+paths:
+  /voice:
+    post:
+      tags: [Voice]
+      summary: 음성 통화 기록 생성
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                clerkId:
+                  type: string
+                  description: Clerk 사용자 ID
+                  example: user_2m5p4j8d9s
+                duration:
+                  type: integer
+                  format: int32
+                  minimum: 0
+                  description: 통화 시간(초)
+                  example: 120
+                status:
+                  type: string
+                  description: '통화 상태 (기본값: COMPLETED)'
+                  enum: [COMPLETED, FAILED]
+              required:
+                - clerkId
+                - duration
+      responses:
+        201:
+          description: 통화 기록 생성 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: 음성 통화 기록이 성공적으로 생성되었습니다.
+                  data:
+                    $ref: '#/components/schemas/VoiceCall'
+                required: [success, message, data]
+        400:
+          description: 요청 데이터가 유효하지 않음
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: Clerk ID로 사용자를 찾을 수 없음
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+        - BearerAuth: []
+  /voice/monthly-count/{clerkId}:
+    get:
+      tags: [Voice]
+      summary: 사용자의 월별 통화 횟수 조회
+      parameters:
+        - in: path
+          name: clerkId
+          required: true
+          schema:
+            type: string
+          description: Clerk 사용자 ID
+        - in: query
+          name: year
+          required: false
+          schema:
+            type: integer
+            format: int32
+            minimum: 2000
+          description: '조회할 연도 (기본값: 현재 연도)'
+        - in: query
+          name: month
+          required: false
+          schema:
+            type: integer
+            format: int32
+            minimum: 1
+            maximum: 12
+          description: '조회할 월 (기본값: 현재 월)'
+      responses:
+        200:
+          description: 월별 통화 횟수 조회 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: 월별 통화 횟수 조회 성공
+                  data:
+                    $ref: '#/components/schemas/MonthlyCallCount'
+                required: [success, message, data]
+        400:
+          description: 잘못된 요청 파라미터
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: Clerk ID로 사용자를 찾을 수 없음
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+        - BearerAuth: []
+  /voice/monthly/{clerkId}:
+    get:
+      tags: [Voice]
+      summary: 사용자의 월별 통화 목록 조회
+      parameters:
+        - in: path
+          name: clerkId
+          required: true
+          schema:
+            type: string
+          description: Clerk 사용자 ID
+        - in: query
+          name: year
+          required: false
+          schema:
+            type: integer
+            format: int32
+            minimum: 2000
+          description: '조회할 연도 (기본값: 현재 연도)'
+        - in: query
+          name: month
+          required: false
+          schema:
+            type: integer
+            format: int32
+            minimum: 1
+            maximum: 12
+          description: '조회할 월 (기본값: 현재 월)'
+      responses:
+        200:
+          description: 월별 통화 목록 조회 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: 월별 통화 목록 조회 성공
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/VoiceCall'
+                required: [success, message, data]
+        400:
+          description: 잘못된 요청 파라미터
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: Clerk ID로 사용자를 찾을 수 없음
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+        - BearerAuth: []
+  /voice/total/{clerkId}:
+    get:
+      tags: [Voice]
+      summary: 사용자의 총 통화 횟수 조회
+      parameters:
+        - in: path
+          name: clerkId
+          required: true
+          schema:
+            type: string
+          description: Clerk 사용자 ID
+      responses:
+        200:
+          description: 총 통화 횟수 조회 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: 총 통화 횟수 조회 성공
+                  data:
+                    type: object
+                    properties:
+                      count:
+                        type: integer
+                        format: int32
+                        example: 12
+                    required: [count]
+                required: [success, message, data]
+        400:
+          description: 잘못된 요청 파라미터
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: Clerk ID로 사용자를 찾을 수 없음
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+        - BearerAuth: []
+components:
+  schemas:
+    VoiceCall:
+      type: object
+      properties:
+        id:
+          type: string
+          description: 통화 ID
+          example: vc_01jabcde1234
+        userId:
+          type: string
+          description: 내부 사용자 ID
+          example: 1
+        duration:
+          type: integer
+          format: int32
+          description: 통화 시간(초)
+          example: 180
+        status:
+          type: string
+          description: 통화 상태
+          enum: [COMPLETED, FAILED]
+        createdAt:
+          type: string
+          format: date-time
+          description: 통화 생성 일시
+          example: '2025-01-01T09:00:00Z'
+      required: [id, userId, duration, status, createdAt]
+    MonthlyCallCount:
+      type: object
+      properties:
+        count:
+          type: integer
+          format: int32
+          description: 월별 통화 횟수
+          example: 5
+        year:
+          type: integer
+          format: int32
+          description: 조회 연도
+          example: 2025
+        month:
+          type: integer
+          format: int32
+          description: 조회 월
+          example: 3
+      required: [count, year, month]
+    ErrorResponse:
+      $ref: '../schemas/common.yaml#/components/schemas/ErrorResponse'

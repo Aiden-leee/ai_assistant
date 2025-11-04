@@ -17,7 +17,9 @@ const nextConfig: NextConfig = {
         hostname: "avatar.iran.liara.run",
       }
     ],
-  }
+    // 이미지 캐시 시간 증가 (초 단위)
+    minimumCacheTTL: 60,
+  },
 };
 
 export default nextConfig;

@@ -3,6 +3,21 @@
 import { currentUser } from "@clerk/nextjs/server";
 import { apiBase } from "../../constants";
 
+/**
+ * 사용자의 admin role 확인 (private metadata에서)
+ */
+export async function checkAdminRole(): Promise<boolean> {
+    try {
+        const user = await currentUser();
+        if (!user) return false;
+        
+        return (user.privateMetadata as { role?: string })?.role === 'admin';
+    } catch (error) {
+        console.error('Error checkAdminRole:', error);
+        return false;
+    }
+}
+
 export async function initUserProfile() {
     try {
         // 현재 로그인된 사용자 정보

@@ -43,7 +43,10 @@ export async function getAllAppointments() {
 export async function getUserAppointments() {
     try {
         const { userId } = await auth();
-        if (!userId) throw new Error("Unauthorized");
+        if (!userId) {
+            // 비로그인 시 서버 렌더 에러를 방지하기 위해 빈 배열 반환
+            return [];
+        }
 
         const userResp = await fetch(`${apiBase}/api/auth/profile/${userId}`);
         if (!userResp.ok) throw new Error("사용자 정보를 찾을 수 없습니다.");
@@ -59,7 +62,8 @@ export async function getUserAppointments() {
         return resp.data.map(transformAppointment);
     } catch (error) {
         console.error("Error getUserAppointments:", error);
-        throw error;
+        // 예외 상황에서도 UI가 무너지지 않도록 빈 배열 반환
+        return [];
     }
 }
 
@@ -67,11 +71,14 @@ export async function getUserAppointments() {
 export async function getUserAppointmentStats() {
     try {
         const { userId } = await auth();
-        if (!userId) throw new Error("Unauthorized");
+        if (!userId) {
+            // 비로그인 기본 값 반환
+            return { totalAppointments: 0, completedAppointments: 0 };
+        }
 
         const user = await fetch(`${apiBase}/api/auth/profile/${userId}`);
 
-        if (!user.ok) throw new Error("User not found");
+        if (!user.ok) throw new Error("사용자 정보를 찾을 수 없습니다.");
 
         const appointments = await fetch(`${apiBase}/api/appointments/user/${userId}/stats`);
         const resp = await appointments.json();
@@ -80,7 +87,7 @@ export async function getUserAppointmentStats() {
         return resp.data as { totalAppointments: number, completedAppointments: number };
     } catch (error) {
         console.error("Error getUserAppointmentStats:", error);
-        throw error;
+        return { totalAppointments: 0, completedAppointments: 0 };
     }
 }
 
@@ -112,6 +119,7 @@ export async function postAppointment(input: AppointmentInput) {
     try {
 
         const { userId } = await auth();
+        console.log("userId", userId);
         if (!userId) throw new Error("Unauthorized");
 
         if (!input.doctorId || !input.date || !input.time) {
@@ -120,7 +128,7 @@ export async function postAppointment(input: AppointmentInput) {
 
         // 사용자 정보 조회
         const user = await fetch(`${apiBase}/api/auth/profile/${userId}`);
-        if (!user.ok) throw new Error("User not found");
+        if (!user.ok) throw new Error("사용자 정보를 찾을 수 없습니다.");
         const userData = await user.json();
 
         const inputData = {

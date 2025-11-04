@@ -94,7 +94,9 @@ export const updateUser = async (id: string, userData: UpdateUserData): Promise<
  */
 export const deleteUser = async (id: string): Promise<boolean> => {
   const result = await sql`
-    DELETE FROM users WHERE id = ${id}
+    DELETE FROM users 
+    WHERE id = ${id}
+    RETURNING clerk_id as "clerkId"
   ` as [User];
   
   return result.length > 0;

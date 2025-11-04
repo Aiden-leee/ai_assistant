@@ -3,6 +3,7 @@
 import { getAllAppointments, getBookedTimeSlots, getUserAppointments, postAppointment, updateAppointmentStatus } from "@/lib/actions/appointments/appointments";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { useUser } from "@clerk/nextjs";
 
 
 // 모든 예약 가져오기
@@ -53,9 +54,11 @@ export function useBookAppointment() {
 
 // 사용자의 예약 가져오기
 export function useUserAppointment() {
+    const { isSignedIn } = useUser();
     const result = useQuery({
         queryKey: ["getUserAppointments"],
         queryFn: getUserAppointments,
+        enabled: !!isSignedIn, // 로그인 상태에서만 조회
     });
 
     return result;

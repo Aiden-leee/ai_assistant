@@ -4,11 +4,14 @@ import { auth, currentUser } from '@clerk/nextjs/server';
 import { CrownIcon } from 'lucide-react';
 import { redirect } from 'next/navigation';
 import React from 'react'
+import { toast } from 'sonner';
 
 async function ProPage() {
     const user = await currentUser();
 
-    if (!user) redirect('/');
+    // if (!user) {
+    //     redirect('/');
+    // }
 
     // const { has } = await auth();
 

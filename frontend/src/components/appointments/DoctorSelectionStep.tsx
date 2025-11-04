@@ -44,6 +44,10 @@ function DoctorSelectionStep({
                                             width={64}
                                             height={64}
                                             className="w-16 h-16 rounded-full object-cover"
+                                            unoptimized
+                                            onError={(e) => { 
+                                                (e.currentTarget as HTMLImageElement).src = '/logo.png'; 
+                                            }}
                                         />
                                         <div className="flex-1">
                                             <CardTitle className="text-lg">{doctor.name}</CardTitle>

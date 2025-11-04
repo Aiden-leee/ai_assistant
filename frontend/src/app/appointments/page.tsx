@@ -73,7 +73,7 @@ function AppointmentsPage() {
                             duration: appointmentType?.duration || "",
                             price: appointmentType?.price || "",
                         });
-                        
+
                     } catch (error) {
                         console.error("Error postSendEmail:", error);
                         toast.error("이메일 전송 실패: 잠시후 다시 시도해주세요.");
@@ -153,7 +153,7 @@ function AppointmentsPage() {
 
             {/* 예약 성공 모달 */}
             {bookedAppointment && (
-                <AppointmentConfirmationModal 
+                <AppointmentConfirmationModal
                     open={showConfirmationModal}
                     onOpenChange={setShowConfirmationModal}
                     appointmentDetails={{
