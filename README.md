@@ -20,6 +20,7 @@
 - shadcn/ui를 활용한 일관되고 모던한 UI 디자인 구현
 - VAPI 음성 AI를 통한 음성 기반 상담 및 예약 시스템
 - Clerk 인증 시스템으로 회원가입 및 로그인 기능을 신속하게 구축
+- 예약 시 node mailer 활용하여 이메일 알림 처리
 - NeonDB 클라우드 서비스를 이용해 PostgreSQL 기반의 안정적인 데이터 관리
 - Server Actions + REST API 병행 구조로 데이터 처리 효율성과 유지보수성 확보<br />
 - Next.js 서버 컴포넌트 기반 아키텍처로 SEO 최적화 및 SSR 대응 <br />
@@ -121,7 +122,6 @@
 
 
 ## 프론트 화면 구성
-![DBERD](./readme_imgs/erd.png) <br />
 
 ### 메인
 ![main1](./readme_imgs/메인_1.png)<br />
@@ -130,6 +130,41 @@
 ![main1](./readme_imgs/메인_4.png)<br />
 ![main1](./readme_imgs/메인_5.png)<br />
 
+### 회원가입
+![auth](./readme_imgs/회원가입.png)<br />
+
+### 작동방식
+![work](./readme_imgs/작동방식.png)<br />
+
+### 문의하기
+![inquiry](./readme_imgs/문의하기.png)<br />
+
+### 가격(프로)
+![price](./readme_imgs/프로_1.png)<br />
+![price](./readme_imgs/프로_2.png)<br />
+![price](./readme_imgs/프로_3.png)<br />
+![price](./readme_imgs/결제이메일.png)<br />
+
+### 관리자
+![admin](./readme_imgs/관리자1.png)<br />
+![admin](./readme_imgs/관리자_예약확인.png)<br />
+![admin](./readme_imgs/관리자_의사추가.png)<br />
+![admin](./readme_imgs/관리자_의사삭제.png)<br />
+
+### 대시보드
+![dashboard](./readme_imgs/대시보드.png)<br />
+
+### 예약
+![예약](./readme_imgs/예약1.png)<br />
+![예약](./readme_imgs/예약2.png)<br />
+![예약](./readme_imgs/예약3.png)<br />
+![예약](./readme_imgs/예약_모달.png)<br />
+![예약](./readme_imgs/예약_목록.png)<br />
+![예약](./readme_imgs/예약_메일.png)<br />
+
+### 음성AI
+![음성](./readme_imgs/음성_1.png)<br />
+![음성](./readme_imgs/음성_2.png)<br />
 
 
 ## 배포 구성 (Deployment Setup)
