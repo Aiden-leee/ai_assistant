@@ -18,7 +18,7 @@ async function AdminPage() {
     }
 
     // 관리자 이메일
-    const adminEmail = process.env.ADMIN_EMAIL;
+    const adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL;
     // 사용자 이메일
     const userEmail = user?.emailAddresses[0].emailAddress;
 
