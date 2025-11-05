@@ -166,6 +166,11 @@
 ![음성](./readme_imgs/음성_1.png)<br />
 ![음성](./readme_imgs/음성_2.png)<br />
 
+https://github.com/user-attachments/assets/b15a4258-d934-4c85-9775-50086ba590dd
+
+
+
+
 
 ## 배포 구성 (Deployment Setup)
 
