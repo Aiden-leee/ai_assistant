@@ -4,7 +4,7 @@ import path from 'path';
 
 // .env 파일을 가장 먼저 로드하여 임포트 단계에서 환경 변수가 비어 크래시나는 것을 방지
 const envFile = process.env.NODE_ENV === 'production' ? '.env.production' : '.env.development';
-dotenv.config({ path: path.resolve(__dirname, '../', envFile) });
+dotenv.config({ path: path.resolve(__dirname, '../../', envFile) });
 
 console.log("NODE_ENV:", process.env.NODE_ENV);
 console.log("envFile:", envFile);
