@@ -1,6 +1,8 @@
 # AI Assistant Project
 <img width="100" height="100" alt="Image" src="https://github.com/user-attachments/assets/4c159ff4-1f5f-42a1-b903-78eb321f9f2f" /> <br />
 
+[AI ASSISTANT 링크](https://main.d3vkw751r45va.amplifyapp.com/)
+
 ## 서비스
 → 의료 AI 음성 비서와 함께 간편하게 진행할 수 있는 서비스
 
@@ -37,6 +39,9 @@
 - **third-party**: VAPI (음성 AI Agent), Clerk (인증/회원가입), swagger
 - **UI Framework**: shadcn/ui  
 
+## 🧱 AWS 배포 구성
+- Amplify: Next.js ssr
+- Ec2: node.js, nginx, pm2
 
 ## 🏥 DB 설계
 ![DBERD](./readme_imgs/erd.png) <br />
