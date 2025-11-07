@@ -9,10 +9,24 @@ import type { NextFunction, Request, Response } from "express";
 const app = express();
 const PORT = process.env.PORT || 3001;
 
+// 허용된 원본 도메인 설정
+const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(",") || [];
+
 // 미들웨어 설정
 app.use(httpLogger);
 app.use(helmet()); // 보안 헤더 설정
-app.use(cors()); // CORS 설정
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin) return callback(null, true);
+
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    } else {
+      return callback(new Error(`CORS blocked for origin: ${origin}`));
+    }
+  },
+  credentials: true, // 쿠키/인증 정보 포함 시 필요
+}));// CORS 설정
 app.use(express.json()); // JSON 파싱
 app.use(express.urlencoded({ extended: true })); // URL 인코딩 파싱
 

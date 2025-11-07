@@ -6,6 +6,12 @@ import path from 'path';
 const envFile = process.env.NODE_ENV === 'production' ? '.env.production' : '.env.development';
 dotenv.config({ path: path.resolve(__dirname, '../', envFile) });
 
+console.log("NODE_ENV:", process.env.NODE_ENV);
+console.log("envFile:", envFile);
+console.log("Resolved path:", path.resolve(__dirname, '../', envFile));
+console.log("DATABASE_URL:", process.env.DATABASE_URL);
+
+
 // 환경 변수 확인
 const databaseUrl = process.env.DATABASE_URL;
 
